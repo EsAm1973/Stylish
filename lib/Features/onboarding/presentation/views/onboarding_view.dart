@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/services/shared_prefs.dart';
 import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Features/onboarding/data/constants/onboarding_data.dart';
 import 'package:stylish/Features/onboarding/presentation/views/widgets/onboarding_bottom_section.dart';
 import 'package:stylish/Features/onboarding/presentation/views/widgets/onboarding_page_content.dart';
 import 'package:stylish/Features/onboarding/presentation/views/widgets/onboarding_top_bar.dart';
+import 'package:stylish/constants.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -36,6 +38,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         curve: Curves.easeInOut,
       );
     } else {
+      Prefs.setBool(isOnboadingViewSeenKey, true);
       GoRouter.of(context).pushReplacement(AppRouter.kLoginRoute);
     }
   }

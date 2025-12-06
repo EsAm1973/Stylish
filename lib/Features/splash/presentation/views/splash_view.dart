@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stylish/Core/services/shared_prefs.dart';
 import 'package:stylish/Core/utils/app_router.dart';
+import 'package:stylish/constants.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -17,9 +19,20 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      GoRouter.of(context).pushReplacement(AppRouter.kOnboardingRoute);
-    });
+    navigateToNextScreen();
+  }
+
+  void navigateToNextScreen() async {
+    bool isOnboardingViewed = Prefs.getBool(isOnboadingViewSeenKey);
+    if (isOnboardingViewed) {
+      Future.delayed(const Duration(seconds: 2), () {
+        GoRouter.of(context).pushReplacement(AppRouter.kLoginRoute);
+      });
+    } else {
+      Future.delayed(const Duration(seconds: 2), () {
+        GoRouter.of(context).pushReplacement(AppRouter.kOnboardingRoute);
+      });
+    }
   }
 
   @override
