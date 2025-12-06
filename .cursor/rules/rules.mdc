@@ -1,0 +1,907 @@
+---
+alwaysApply: true
+# Flutter/Dart AI Agent Coding Rules
+
+## Core Principles
+
+### 1. Code Organization & Architecture
+- Follow **MVVM (Model-View-ViewModel)** pattern: separate presentation and data layers only
+- Use **feature-first** folder structure instead of layer-first
+- Keep each file under 300 lines; split into multiple files if longer
+- One widget per file for complex widgets (except small helper widgets)
+- Group related files in features: `lib/features/feature_name/{data, presentation}`
+- **NO domain layer** - business logic goes in Cubits (ViewModel layer)
+
+### 2. State Management (MVVM Pattern)
+- Use **Bloc/Cubit** as the ViewModel layer in MVVM
+- **Always use Cubit** for state management (prefer Cubit over Bloc for simplicity)
+- **Cubit contains all business logic** - no separate domain/use case layer needed
+- Never mix state management solutions in the same feature
+- Cubits directly call repositories and handle business logic
+- **Inject Cubits using GetIt** in the router, never create them manually
+- **Provide Cubits at the route level** in `app_router.dart` using `BlocProvider`
+- Always close Cubits properly (they auto-dispose when using BlocProvider)
+- One Cubit per feature/screen (avoid shared Cubits unless truly needed)
+- **Constructor injection**: All Cubit dependencies must be injected via constructor using GetIt
+
+**MVVM Layers:**
+- **Model**: Data models and repositories in `data/` folder
+- **View**: UI widgets and screens in `presentation/screens/` and `presentation/widgets/`
+- **ViewModel**: Cubits in `presentation/cubit/` folder (contains business logic)
+
+### 3. Widget Best Practices
+- Prefer **composition over inheritance**
+- Extract reusable widgets into separate files in `lib/widgets/` or `lib/core/widgets/`
+- Use `const` constructors wherever possible for better performance
+- Keep `build()` methods simple and readable (max 50 lines)
+- Extract complex widget trees into separate methods or widgets
+- Use `StatelessWidget` by default; only use `StatefulWidget` when necessary
+
+### 4. Naming Conventions
+- **Files**: snake_case (e.g., `user_profile_screen.dart`)
+- **Classes**: PascalCase (e.g., `UserProfileScreen`)
+- **Variables/Functions**: camelCase (e.g., `userName`, `getUserData()`)
+- **Constants**: lowerCamelCase with `k` prefix (e.g., `kPrimaryColor`)
+- **Private members**: prefix with underscore (e.g., `_privateMethod()`)
+- Suffix widgets with their type: `LoginScreen`, `UserCard`, `LoadingButton`
+
+### 5. Code Structure Within Files
+```dart
+// 1. Imports (dart: first, then package:, then relative)
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/user.dart';
+import '../services/auth_service.dart';
+
+// 2. Class declaration with documentation
+/// Detailed description of what this class does
+class MyWidget extends StatelessWidget {
+  // 3. Constants
+  static const double kDefaultPadding = 16.0;
+  
+  // 4. Final fields (constructor parameters)
+  final String title;
+  final VoidCallback? onPressed;
+  
+  // 5. Constructor
+  const MyWidget({
+    super.key,
+    required this.title,
+    this.onPressed,
+  });
+  
+  // 6. Overridden methods
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+  
+  // 7. Public methods
+  void publicMethod() {}
+  
+  // 8. Private methods
+  void _privateMethod() {}
+}
+```
+
+### 6. Error Handling & Validation
+- Always handle errors with try-catch blocks for async operations
+- **Always use `Either` type from dartz package** for operations that can fail (Left for failure, Right for success)
+- Return `Either<Failure, SuccessType>` from all repository and use case methods
+- Create custom Failure classes for different error types (ServerFailure, CacheFailure, etc.)
+- Validate user input immediately and show clear error messages
+- Never use empty catch blocks; always log errors
+- Use `assert()` for development-time checks
+
+### 7. Async Programming
+- Always use `async`/`await` instead of `.then()` for readability
+- Add `unawaited()` from `dart:async` for fire-and-forget operations
+- Use `Future.wait()` for parallel async operations
+- Implement proper loading states for all async operations
+- Cancel streams and futures in `dispose()`
+
+### 8. Performance Optimization
+- Use `const` constructors wherever possible
+- Implement `ListView.builder` for long lists, never `ListView()` with many children
+- Use `RepaintBoundary` for expensive widgets that don't change often
+- Avoid rebuilding entire widget trees; use `Consumer` or `Selector` to rebuild only necessary parts
+- Cache expensive computations using `useMemoized` (if using hooks) or class-level variables
+- Use `Image.network` with `cacheHeight` and `cacheWidth` parameters
+
+### 9. Code Documentation
+- Add dartdoc comments (`///`) for all public APIs
+- Document complex logic with inline comments (`//`)
+- Include example usage in documentation for complex widgets/functions
+- Document why something is done, not just what (code shows what)
+
+### 10. Testing Requirements
+- Write unit tests for all business logic
+- Write widget tests for custom widgets
+- Name test files with `_test.dart` suffix
+- Use descriptive test names: `test('should return user when login is successful')`
+- Aim for >80% code coverage on business logic
+
+### 11. Dependency Management
+- Keep dependencies up to date
+- Use exact versions for critical packages
+- Prefer well-maintained, popular packages
+- Add dependency reasons as comments in `pubspec.yaml`
+- Group dependencies logically in `pubspec.yaml`
+
+**Required packages for this project:**
+```yaml
+dependencies:
+  flutter_bloc: ^8.1.3  # State management with Cubit
+  dartz: ^0.10.1        # Functional programming (Either, Option, Unit)
+  freezed_annotation: ^2.4.1  # Code generation for models
+  equatable: ^2.0.5     # Value equality
+  get_it: ^7.6.4        # Dependency injection
+  go_router: ^13.0.0    # Routing and navigation
+
+dev_dependencies:
+  build_runner: ^2.4.6
+  freezed: ^2.4.5
+  bloc_test: ^9.1.5     # Testing Cubits
+```
+
+### 12. UI/UX Standards
+- Support both light and dark themes
+- Make all text scalable (avoid fixed font sizes)
+- Ensure minimum touch target size of 48x48
+- Add proper loading indicators for async operations
+- Implement proper error states with retry options
+- Use `SafeArea` for proper screen edge handling
+- Add hero animations for navigation where appropriate
+- Use the AppTextStyles file, if it exists in the project, to format text.
+- Use Theme.of(context) for all colors instead of fixed color values.
+- If the project supports a screen util package (e.g., flutter_screenutil/ScreenUtil), base lengths and areas on that package (e.g., .w, .h, .sp) instead of fixed values.
+
+### 13. Code Style (Dart/Flutter Specific)
+- Follow official Dart style guide
+- Use trailing commas for better formatting
+- Max line length: 80 characters
+- Use collection-if and collection-for for conditional widgets
+- Prefer expression bodies (`=>`) for simple functions
+- Use `??` and `?.` for null safety
+
+### 14. Security & Data Handling
+- Never store sensitive data in plain text
+- Use `flutter_secure_storage` for tokens and credentials
+- Validate all user input
+- Sanitize data before displaying in UI
+- Use environment variables for API keys and secrets
+- Implement certificate pinning for production apps
+
+### 15. Git Commit Messages (for code context)
+- Use conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
+- Keep first line under 50 characters
+- Add detailed description if needed
+- Reference issue numbers when applicable
+
+## Code Quality Checklist
+
+Before marking code as complete, verify:
+- [ ] All state management uses **Cubit** (no other state management solutions)
+- [ ] All error handling uses **Either<Failure, Success>** from dartz
+- [ ] All Cubit states are **freezed unions** with proper state types
+- [ ] **All dependencies injected via GetIt** (no manual instantiation)
+- [ ] **All Cubits provided in app_router.dart** (not in screens)
+- [ ] **All navigation uses GoRouter** (context.go, context.push, etc.)
+- [ ] All repositories and data sources registered in injection.dart
+- [ ] Cubits registered as factories in GetIt (not singletons)
+- [ ] No hardcoded strings (use localization or constants)
+- [ ] No magic numbers (use named constants)
+- [ ] All async operations have error handling
+- [ ] All user-facing text is properly formatted
+- [ ] Widget tree depth is reasonable (<10 levels)
+- [ ] No duplicate code (DRY principle)
+- [ ] All null safety best practices followed
+- [ ] Proper loading and error states implemented in Cubit
+- [ ] Code is properly formatted (`dart format .`)
+- [ ] No analyzer warnings (`dart analyze`)
+- [ ] All TODO comments have context and owner
+- [ ] BlocProvider is used correctly and Cubits are properly closed
+
+## Common Patterns to Follow
+
+### Folder Structure (MVVM Pattern)
+```
+lib/
+├── core/
+│   ├── constants/
+│   ├── theme/
+│   ├── utils/
+│   ├── widgets/
+│   ├── errors/
+│   │   └── failures.dart
+│   └── di/
+│       └── injection.dart        # GetIt setup
+├── features/
+│   └── feature_name/
+│       ├── data/
+│       │   ├── models/
+│       │   ├── repositories/
+│       │   └── datasources/
+│       └── presentation/
+│           ├── screens/
+│           ├── widgets/
+│           └── cubit/              # ViewModel layer
+│               ├── feature_cubit.dart
+│               ├── feature_state.dart
+│               └── feature_cubit.freezed.dart
+├── router/
+│   └── app_router.dart             # GoRouter configuration
+└── main.dart
+```
+
+**Note**: No `domain/` folder - business logic lives in Cubits
+
+### Model Class Example
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'user.freezed.dart';
+part 'user.g.dart';
+
+@freezed
+class User with _$User {
+  const factory User({
+    required String id,
+    required String name,
+    required String email,
+    DateTime? lastLogin,
+  }) = _User;
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+```
+
+### Repository Pattern with Either
+```dart
+import 'package:dartz/dartz.dart';
+
+// Abstract repository (defines contract)
+abstract class UserRepository {
+  Future<Either<Failure, User>> getUser(String id);
+  Future<Either<Failure, Unit>> updateUser(User user);
+  Future<Either<Failure, List<User>>> getAllUsers();
+}
+
+// Concrete implementation
+class UserRepositoryImpl implements UserRepository {
+  final UserRemoteDataSource _remoteDataSource;
+  final UserLocalDataSource _localDataSource;
+
+  UserRepositoryImpl(this._remoteDataSource, this._localDataSource);
+
+  @override
+  Future<Either<Failure, User>> getUser(String id) async {
+    try {
+      final user = await _remoteDataSource.getUser(id);
+      await _localDataSource.cacheUser(user);
+      return Right(user);
+    } on ServerException {
+      // Try local cache on server failure
+      try {
+        final user = await _localDataSource.getUser(id);
+        return Right(user);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateUser(User user) async {
+    try {
+      await _remoteDataSource.updateUser(user);
+      await _localDataSource.cacheUser(user);
+      return const Right(unit);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<User>>> getAllUsers() async {
+    try {
+      final users = await _remoteDataSource.getAllUsers();
+      return Right(users);
+    } on ServerException {
+      return Left(ServerFailure());
+    } on NetworkException {
+      return Left(NetworkFailure());
+    }
+  }
+}
+```
+
+### Cubit Pattern (ViewModel with Business Logic)
+```dart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'user_state.dart';
+part 'user_cubit.freezed.dart';
+
+class UserCubit extends Cubit<UserState> {
+  final UserRepository _repository;
+
+  UserCubit(this._repository) : super(const UserState.initial());
+
+  // Business logic: Load user
+  Future<void> loadUser(String id) async {
+    emit(const UserState.loading());
+    
+    final result = await _repository.getUser(id);
+    
+    result.fold(
+      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
+      (user) => emit(UserState.loaded(user)),
+    );
+  }
+
+  // Business logic: Update user with validation
+  Future<void> updateUser(User user) async {
+    // Validation logic in Cubit
+    if (user.name.isEmpty) {
+      emit(const UserState.error('Name cannot be empty'));
+      return;
+    }
+
+    if (!_isValidEmail(user.email)) {
+      emit(const UserState.error('Invalid email format'));
+      return;
+    }
+
+    emit(const UserState.loading());
+    
+    final result = await _repository.updateUser(user);
+    
+    result.fold(
+      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
+      (_) => emit(UserState.loaded(user)),
+    );
+  }
+
+  // Business logic: Load all users and filter
+  Future<void> loadActiveUsers() async {
+    emit(const UserState.loading());
+    
+    final result = await _repository.getAllUsers();
+    
+    result.fold(
+      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
+      (users) {
+        // Business logic: filter active users
+        final activeUsers = users.where((user) => user.isActive).toList();
+        emit(UserState.loadedList(activeUsers));
+      },
+    );
+  }
+
+  // Helper methods for business logic
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}
+
+### Failure Classes Example
+```dart
+abstract class Failure {
+  const Failure();
+}
+
+class ServerFailure extends Failure {}
+
+class CacheFailure extends Failure {}
+
+class NetworkFailure extends Failure {}
+
+class ValidationFailure extends Failure {
+  final String message;
+  const ValidationFailure(this.message);
+}
+```
+
+### MVVM Data Flow
+```
+┌─────────────────────────────────────────────────────┐
+│                    View (UI)                        │
+│              (Screens & Widgets)                    │
+│  - Displays data                                    │
+│  - Triggers user actions                            │
+└──────────────────┬──────────────────────────────────┘
+                   │
+                   ↓
+┌─────────────────────────────────────────────────────┐
+│              ViewModel (Cubit)                      │
+│  - Injected via GetIt in app_router.dart           │
+│  - Contains business logic                          │
+│  - Validates data                                   │
+│  - Transforms data for UI                           │
+│  - Handles state management                         │
+└──────────────────┬──────────────────────────────────┘
+                   │
+                   ↓
+┌─────────────────────────────────────────────────────┐
+│           Model (Repository & Data)                 │
+│  - Injected via GetIt                               │
+│  - Fetches data from API/Database                   │
+│  - Caches data locally                              │
+│  - Returns Either<Failure, Data>                    │
+└─────────────────────────────────────────────────────┘
+```
+
+### GetIt Dependency Injection Setup
+```dart
+// core/di/injection.dart
+import 'package:get_it/get_it.dart';
+
+final getIt = GetIt.instance;
+
+Future<void> setupDependencies() async {
+  // External dependencies
+  // Example: final sharedPreferences = await SharedPreferences.getInstance();
+  // getIt.registerLazySingleton(() => sharedPreferences);
+
+  // Data sources
+  getIt.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(),
+  );
+  
+  getIt.registerLazySingleton<UserLocalDataSource>(
+    () => UserLocalDataSourceImpl(),
+  );
+
+  // Repositories
+  getIt.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      getIt<UserRemoteDataSource>(),
+      getIt<UserLocalDataSource>(),
+    ),
+  );
+
+  // Cubits - registered as factories (new instance each time)
+  getIt.registerFactory(
+    () => UserCubit(getIt<UserRepository>()),
+  );
+}
+```
+
+### GoRouter Configuration with BlocProvider
+```dart
+// router/app_router.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../core/di/injection.dart';
+
+final appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    
+    // Provide Cubit at route level using GetIt
+    GoRoute(
+      path: '/user/:id',
+      builder: (context, state) {
+        final userId = state.pathParameters['id']!;
+        
+        return BlocProvider(
+          create: (context) => getIt<UserCubit>()..loadUser(userId),
+          child: const UserScreen(),
+        );
+      },
+    ),
+    
+    // Example with multiple Cubits
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => getIt<ProfileCubit>()..loadProfile(),
+            ),
+            BlocProvider(
+              create: (context) => getIt<SettingsCubit>()..loadSettings(),
+            ),
+          ],
+          child: const ProfileScreen(),
+        );
+      },
+    ),
+    
+    // Passing data through navigation
+    GoRoute(
+      path: '/edit-user',
+      builder: (context, state) {
+        final user = state.extra as User;
+        
+        return BlocProvider(
+          create: (context) => getIt<UserCubit>()..setUser(user),
+          child: const EditUserScreen(),
+        );
+      },
+    ),
+  ],
+  
+  // Error handling
+  errorBuilder: (context, state) => ErrorScreen(
+    error: state.error.toString(),
+  ),
+);
+```
+
+### Main.dart Setup
+```dart
+// main.dart
+import 'package:flutter/material.dart';
+import 'core/di/injection.dart';
+import 'router/app_router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Setup GetIt dependencies
+  await setupDependencies();
+  
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'My App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      routerConfig: appRouter,
+    );
+  }
+}
+```
+
+### Navigation Usage in Screens
+```dart
+// Navigate to a route
+context.go('/user/123');
+
+// Navigate with replacement
+context.replace('/home');
+
+// Navigate back
+context.pop();
+
+// Navigate with data
+context.push('/edit-user', extra: user);
+
+// Navigate with named parameters
+context.pushNamed(
+  'userDetails',
+  pathParameters: {'id': '123'},
+  queryParameters: {'tab': 'posts'},
+);
+```
+
+### Using Cubit in UI
+```dart
+// Screen receives Cubit from router - NO manual instantiation
+class UserScreen extends StatelessWidget {
+  const UserScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Cubit is already provided by BlocProvider in app_router.dart
+    return Scaffold(
+      appBar: AppBar(title: const Text('User Profile')),
+      body: BlocConsumer<UserCubit, UserState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            error: (message) => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            ),
+          );
+        },
+        builder: (context, state) {
+          return state.when(
+            initial: () => const SizedBox.shrink(),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            loaded: (user) => _buildUserContent(context, user),
+            loadedList: (users) => _buildUserList(users),
+            error: (message) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(message),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<UserCubit>().loadUser('user123'),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildUserContent(BuildContext context, User user) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Name: ${user.name}'),
+          Text('Email: ${user.email}'),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              final updatedUser = user.copyWith(name: 'New Name');
+              context.read<UserCubit>().updateUser(updatedUser);
+            },
+            child: const Text('Update User'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              // Navigate to edit screen with data
+              context.push('/edit-user', extra: user);
+            },
+            child: const Text('Edit User'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserList(List<User> users) {
+    return ListView.builder(
+      itemCount: users.length,
+      itemBuilder: (context, index) {
+        final user = users[index];
+        return ListTile(
+          title: Text(user.name),
+          subtitle: Text(user.email),
+          onTap: () => context.go('/user/${user.id}'),
+        );
+      },
+    );
+  }
+}
+```
+
+## Additional Instructions for AI Agents
+
+**CRITICAL ARCHITECTURE RULES (MVVM):**
+- **Follow MVVM pattern STRICTLY** - only `data/` and `presentation/` folders in features
+- **NO domain layer, NO use cases** - all business logic goes directly in Cubits
+- **Cubit = ViewModel** - contains all business logic, validation, and data transformation
+- **Repository = Model** - only handles data fetching/caching, no business logic
+- **Widgets = View** - only UI and user interaction, delegates all logic to Cubit
+
+**CRITICAL DEPENDENCY INJECTION RULES (GetIt):**
+- **NEVER manually instantiate** repositories, data sources, or Cubits
+- **ALWAYS use GetIt** for dependency injection: `getIt<ClassName>()`
+- **Register data sources and repositories as lazy singletons** in injection.dart
+- **Register Cubits as factories** (not singletons) so each route gets a fresh instance
+- **Inject dependencies via constructor** - never use service locator pattern inside classes
+- **Setup GetIt in main.dart** before running the app
+
+**CRITICAL ROUTING RULES (GoRouter):**
+- **ALL navigation must use GoRouter** - never use Navigator.push or MaterialPageRoute
+- **Define all routes in app_router.dart** - single source of truth for routing
+- **Provide Cubits at route level** in app_router.dart using BlocProvider
+- **Inject Cubits using GetIt** in the route builder: `getIt<UserCubit>()`
+- **Never create BlocProvider inside screens** - always in app_router.dart
+- Use `context.go()` for navigation, `context.push()` for stacking, `context.pop()` for back
+- Pass data using `extra` parameter or path/query parameters
+
+**CRITICAL STATE MANAGEMENT RULES:**
+- **ALWAYS use Cubit** for state management (never Provider, Riverpod, GetX, or other solutions)
+- **ALWAYS use Either from dartz** for error handling in repositories
+- **NEVER use Result, Try, or other error handling patterns** - only Either<Failure, Success>
+- **NEVER create UseCase classes** - Cubits call repositories directly
+
+**CUBIT RESPONSIBILITY (ViewModel):**
+- Data validation (email format, required fields, etc.)
+- Business rules (age limits, calculation logic, etc.)
+- Data transformation (formatting, filtering, sorting)
+- Calling repositories to fetch/save data (injected via GetIt)
+- Mapping failures to user-friendly messages
+- Managing UI state (loading, success, error)
+
+**REPOSITORY RESPONSIBILITY (Model):**
+- Fetching data from API/Database
+- Caching data locally
+- Handling data sources (remote/local)
+- Returning Either<Failure, Data>
+- NO business logic, NO validation
+
+**SCREEN RESPONSIBILITY (View):**
+- Display UI and handle user interactions
+- Read Cubit from context (never create it): `context.read<UserCubit>()`
+- Listen to state changes using BlocBuilder/BlocListener/BlocConsumer
+- Navigate using GoRouter: `context.go()`, `context.push()`
+- NO business logic, NO direct repository access
+
+1. **Always ask for clarification** if requirements are ambiguous
+2. **Suggest improvements** if you notice code smells or better patterns
+3. **Explain your decisions** when implementing complex solutions
+4. **Provide alternatives** when multiple valid approaches exist
+5. **Flag potential issues** before they become problems
+6. **Update tests** whenever you modify business logic
+7. **Consider backwards compatibility** when modifying existing code
+8. **Think about edge cases** and handle them explicitly
+9. **Use freezed for Cubit states** - all states must be freezed unions
+10. **Implement proper Failure classes** for all error types in the app
+11. **Keep business logic in Cubits ONLY** - never in repositories or widgets
+12. **Always register new dependencies in injection.dart** when creating new features
+13. **Always add new routes in app_router.dart** - never hardcode navigation).hasMatch(email);
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    if (failure is ServerFailure) {
+      return 'Server error. Please try again.';
+    } else if (failure is CacheFailure) {
+      return 'Local data error.';
+    } else if (failure is NetworkFailure) {
+      return 'No internet connection.';
+    }
+    return 'Unexpected error occurred.';
+  }
+}
+
+// user_state.dart
+@freezed
+class UserState with _$UserState {
+  const factory UserState.initial() = _Initial;
+  const factory UserState.loading() = _Loading;
+  const factory UserState.loaded(User user) = _Loaded;
+  const factory UserState.loadedList(List<User> users) = _LoadedList;
+  const factory UserState.error(String message) = _Error;
+}
+```
+
+### Failure Classes Example
+```dart
+abstract class Failure {
+  const Failure();
+}
+
+class ServerFailure extends Failure {}
+
+class CacheFailure extends Failure {}
+
+class NetworkFailure extends Failure {}
+
+class ValidationFailure extends Failure {
+  final String message;
+  const ValidationFailure(this.message);
+}
+```
+
+### UseCase Pattern Example
+```dart
+import 'package:dartz/dartz.dart';
+
+abstract class UseCase<Type, Params> {
+  Future<Either<Failure, Type>> call(Params params);
+}
+
+class GetUserUseCase implements UseCase<User, String> {
+  final UserRepository repository;
+
+  GetUserUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, User>> call(String userId) async {
+    return await repository.getUser(userId);
+  }
+}
+
+class UpdateUserUseCase implements UseCase<Unit, User> {
+  final UserRepository repository;
+
+  UpdateUserUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, Unit>> call(User user) async {
+    return await repository.updateUser(user);
+  }
+}
+
+// For use cases with no parameters
+class NoParams {}
+```
+
+### Using Cubit in UI
+```dart
+class UserScreen extends StatelessWidget {
+  const UserScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => UserCubit(
+        context.read<GetUserUseCase>(),
+        context.read<UpdateUserUseCase>(),
+      )..loadUser('user123'),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('User Profile')),
+        body: BlocConsumer<UserCubit, UserState>(
+          listener: (context, state) {
+            state.whenOrNull(
+              error: (message) => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              ),
+            );
+          },
+          builder: (context, state) {
+            return state.when(
+              initial: () => const SizedBox.shrink(),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              loaded: (user) => _buildUserContent(user),
+              error: (message) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(message),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.read<UserCubit>().loadUser('user123'),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserContent(User user) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Name: ${user.name}'),
+          Text('Email: ${user.email}'),
+        ],
+      ),
+    );
+  }
+}
+```
+
+## Additional Instructions for AI Agents
+
+**CRITICAL STATE MANAGEMENT RULES:**
+- **ALWAYS use Cubit** for state management (never Provider, Riverpod, GetX, or other solutions)
+- **ALWAYS use Either from dartz** for error handling in repositories and use cases
+- **NEVER use Result, Try, or other error handling patterns** - only Either<Failure, Success>
+
+1. **Always ask for clarification** if requirements are ambiguous
+2. **Suggest improvements** if you notice code smells or better patterns
+3. **Explain your decisions** when implementing complex solutions
+4. **Provide alternatives** when multiple valid approaches exist
+5. **Flag potential issues** before they become problems
+6. **Update tests** whenever you modify business logic
+7. **Consider backwards compatibility** when modifying existing code
+8. **Think about edge cases** and handle them explicitly
+9. **Use freezed for Cubit states** - all states must be freezed unions
+10. **Implement proper Failure classes** for all error types in the app
+---
