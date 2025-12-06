@@ -8,6 +8,14 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String getAppleIconColor() {
+      if (Theme.of(context).brightness == Brightness.dark) {
+        return 'assets/icons/apple_icon_light.svg';
+      } else {
+        return 'assets/icons/apple_icon.svg';
+      }
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -19,7 +27,7 @@ class SocialLoginButtons extends StatelessWidget {
         ),
         SizedBox(width: 24.w),
         SocialLoginIcon(
-          assetPath: 'assets/icons/apple_icon.svg',
+          assetPath: getAppleIconColor(),
           onTap: () {
             // Handle Apple login
           },

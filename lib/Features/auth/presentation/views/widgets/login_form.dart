@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
 import 'package:stylish/Core/widgets/custom_text_field.dart';
 
@@ -68,7 +70,9 @@ class _LoginFormState extends State<LoginForm> {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: () {},
+            onPressed: () {
+              GoRouter.of(context).push(AppRouter.kForgetPasswordRoute);
+            },
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               minimumSize: Size.zero,
