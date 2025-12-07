@@ -10,15 +10,18 @@ class SignupForm extends StatefulWidget {
 }
 
 class _SignupFormState extends State<SignupForm> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -29,10 +32,22 @@ class _SignupFormState extends State<SignupForm> {
     return Column(
       children: [
         CustomTextField(
-          controller: _usernameController,
-          hintText: 'Username or Email',
+          controller: _nameController,
+          hintText: 'Full Name',
           prefixIcon: Icon(
             Icons.person,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            size: 24.sp,
+          ),
+          keyboardType: TextInputType.name,
+          textInputAction: TextInputAction.next,
+        ),
+        SizedBox(height: 30.h),
+        CustomTextField(
+          controller: _emailController,
+          hintText: 'Email',
+          prefixIcon: Icon(
+            Icons.email,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             size: 24.sp,
           ),
@@ -96,5 +111,3 @@ class _SignupFormState extends State<SignupForm> {
     );
   }
 }
-
-

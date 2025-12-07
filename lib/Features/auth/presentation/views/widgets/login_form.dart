@@ -13,13 +13,13 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -29,10 +29,10 @@ class _LoginFormState extends State<LoginForm> {
     return Column(
       children: [
         CustomTextField(
-          controller: _usernameController,
-          hintText: 'Username or Email',
+          controller: _emailController,
+          hintText: 'Email',
           prefixIcon: Icon(
-            Icons.person,
+            Icons.email,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             size: 24.sp,
           ),
