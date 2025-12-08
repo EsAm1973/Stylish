@@ -10,24 +10,40 @@ alwaysApply: true
 - Keep each file under 300 lines; split into multiple files if longer
 - One widget per file for complex widgets (except small helper widgets)
 - Group related files in features: `lib/features/feature_name/{data, presentation}`
-- **NO domain layer** - business logic goes in Cubits (ViewModel layer)
+- **NO domain layer** - business logic goes in ViewModels (ChangeNotifier classes)
+- Use **GetIt** for dependency injection - never manually create instances
+- Use **GoRouter** for all navigation through `app_router.dart`
 
-### 2. State Management (MVVM Pattern)
-- Use **Bloc/Cubit** as the ViewModel layer in MVVM
-- **Always use Cubit** for state management (prefer Cubit over Bloc for simplicity)
-- **Cubit contains all business logic** - no separate domain/use case layer needed
+### 2. State Management (MVVM Pattern with Provider)
+- Use **Provider with ChangeNotifier** as the ViewModel layer in MVVM
+- **Always use ChangeNotifier** for state management
+- **ViewModel contains all business logic** - no separate domain/use case layer needed
 - Never mix state management solutions in the same feature
-- Cubits directly call repositories and handle business logic
-- **Inject Cubits using GetIt** in the router, never create them manually
-- **Provide Cubits at the route level** in `app_router.dart` using `BlocProvider`
-- Always close Cubits properly (they auto-dispose when using BlocProvider)
-- One Cubit per feature/screen (avoid shared Cubits unless truly needed)
-- **Constructor injection**: All Cubit dependencies must be injected via constructor using GetIt
+- ViewModels directly call repositories and handle business logic
+- **Inject ViewModels using GetIt** in the router, never create them manually
+- **Provide ViewModels at the route level** in `app_router.dart` using `ChangeNotifierProvider`
+- Always dispose ViewModels properly (auto-dispose when using ChangeNotifierProvider)
+- One ViewModel per feature/screen (avoid shared ViewModels unless truly needed)
+- **Constructor injection**: All ViewModel dependencies must be injected via constructor using GetIt
+- Use `notifyListeners()` to update UI after state changes
 
 **MVVM Layers:**
 - **Model**: Data models and repositories in `data/` folder
 - **View**: UI widgets and screens in `presentation/screens/` and `presentation/widgets/`
-- **ViewModel**: Cubits in `presentation/cubit/` folder (contains business logic)
+- **ViewModel**: ChangeNotifier classes in `presentation/view_models/` folder (contains business logic)
+
+**State Management Pattern:**
+```dart
+class UserViewModel extends ChangeNotifier {
+  UserState _state = const UserState.initial();
+  UserState get state => _state;
+
+  void _setState(UserState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+}
+```
 
 ### 3. Widget Best Practices
 - Prefer **composition over inheritance**
@@ -38,12 +54,13 @@ alwaysApply: true
 - Use `StatelessWidget` by default; only use `StatefulWidget` when necessary
 
 ### 4. Naming Conventions
-- **Files**: snake_case (e.g., `user_profile_screen.dart`)
-- **Classes**: PascalCase (e.g., `UserProfileScreen`)
+- **Files**: snake_case (e.g., `user_profile_screen.dart`, `user_view_model.dart`)
+- **Classes**: PascalCase (e.g., `UserProfileScreen`, `UserViewModel`)
 - **Variables/Functions**: camelCase (e.g., `userName`, `getUserData()`)
 - **Constants**: lowerCamelCase with `k` prefix (e.g., `kPrimaryColor`)
 - **Private members**: prefix with underscore (e.g., `_privateMethod()`)
 - Suffix widgets with their type: `LoginScreen`, `UserCard`, `LoadingButton`
+- Suffix ViewModels with `ViewModel`: `UserViewModel`, `ProfileViewModel`
 
 ### 5. Code Structure Within Files
 ```dart
@@ -90,7 +107,7 @@ class MyWidget extends StatelessWidget {
 ### 6. Error Handling & Validation
 - Always handle errors with try-catch blocks for async operations
 - **Always use `Either` type from dartz package** for operations that can fail (Left for failure, Right for success)
-- Return `Either<Failure, SuccessType>` from all repository and use case methods
+- Return `Either<Failure, SuccessType>` from all repository methods
 - Create custom Failure classes for different error types (ServerFailure, CacheFailure, etc.)
 - Validate user input immediately and show clear error messages
 - Never use empty catch blocks; always log errors
@@ -107,8 +124,8 @@ class MyWidget extends StatelessWidget {
 - Use `const` constructors wherever possible
 - Implement `ListView.builder` for long lists, never `ListView()` with many children
 - Use `RepaintBoundary` for expensive widgets that don't change often
-- Avoid rebuilding entire widget trees; use `Consumer` or `Selector` to rebuild only necessary parts
-- Cache expensive computations using `useMemoized` (if using hooks) or class-level variables
+- Use `Consumer` or `Selector` to rebuild only necessary parts of the widget tree
+- Cache expensive computations in ViewModel as private fields
 - Use `Image.network` with `cacheHeight` and `cacheWidth` parameters
 
 ### 9. Code Documentation
@@ -118,7 +135,7 @@ class MyWidget extends StatelessWidget {
 - Document why something is done, not just what (code shows what)
 
 ### 10. Testing Requirements
-- Write unit tests for all business logic
+- Write unit tests for all business logic in ViewModels
 - Write widget tests for custom widgets
 - Name test files with `_test.dart` suffix
 - Use descriptive test names: `test('should return user when login is successful')`
@@ -134,7 +151,7 @@ class MyWidget extends StatelessWidget {
 **Required packages for this project:**
 ```yaml
 dependencies:
-  flutter_bloc: ^8.1.3  # State management with Cubit
+  provider: ^6.1.1      # State management with ChangeNotifier
   dartz: ^0.10.1        # Functional programming (Either, Option, Unit)
   freezed_annotation: ^2.4.1  # Code generation for models
   equatable: ^2.0.5     # Value equality
@@ -144,7 +161,6 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.4.6
   freezed: ^2.4.5
-  bloc_test: ^9.1.5     # Testing Cubits
 ```
 
 ### 12. UI/UX Standards
@@ -155,9 +171,9 @@ dev_dependencies:
 - Implement proper error states with retry options
 - Use `SafeArea` for proper screen edge handling
 - Add hero animations for navigation where appropriate
-- Use the AppTextStyles file, if it exists in the project, to format text.
-- Use Theme.of(context) for all colors instead of fixed color values.
-- If the project supports a screen util package (e.g., flutter_screenutil/ScreenUtil), base lengths and areas on that package (e.g., .w, .h, .sp) instead of fixed values.
+- Use the AppTextStyles file, if it exists in the project, to format text
+- Use Theme.of(context) for all colors instead of fixed color values
+- If the project supports a screen util package (e.g., flutter_screenutil/ScreenUtil), base lengths and areas on that package (e.g., .w, .h, .sp) instead of fixed values
 
 ### 13. Code Style (Dart/Flutter Specific)
 - Follow official Dart style guide
@@ -184,14 +200,15 @@ dev_dependencies:
 ## Code Quality Checklist
 
 Before marking code as complete, verify:
-- [ ] All state management uses **Cubit** (no other state management solutions)
+- [ ] All state management uses **Provider with ChangeNotifier** (no other state management solutions)
 - [ ] All error handling uses **Either<Failure, Success>** from dartz
-- [ ] All Cubit states are **freezed unions** with proper state types
+- [ ] All ViewModel states are **freezed unions** with proper state types
 - [ ] **All dependencies injected via GetIt** (no manual instantiation)
-- [ ] **All Cubits provided in app_router.dart** (not in screens)
+- [ ] **All ViewModels provided in app_router.dart** (not in screens)
 - [ ] **All navigation uses GoRouter** (context.go, context.push, etc.)
 - [ ] All repositories and data sources registered in injection.dart
-- [ ] Cubits registered as factories in GetIt (not singletons)
+- [ ] ViewModels registered as factories in GetIt (not singletons)
+- [ ] All ViewModels properly call `notifyListeners()` after state changes
 - [ ] No hardcoded strings (use localization or constants)
 - [ ] No magic numbers (use named constants)
 - [ ] All async operations have error handling
@@ -199,11 +216,11 @@ Before marking code as complete, verify:
 - [ ] Widget tree depth is reasonable (<10 levels)
 - [ ] No duplicate code (DRY principle)
 - [ ] All null safety best practices followed
-- [ ] Proper loading and error states implemented in Cubit
+- [ ] Proper loading and error states implemented in ViewModel
 - [ ] Code is properly formatted (`dart format .`)
 - [ ] No analyzer warnings (`dart analyze`)
 - [ ] All TODO comments have context and owner
-- [ ] BlocProvider is used correctly and Cubits are properly closed
+- [ ] ChangeNotifierProvider is used correctly and ViewModels are properly disposed
 
 ## Common Patterns to Follow
 
@@ -228,16 +245,15 @@ lib/
 │       └── presentation/
 │           ├── screens/
 │           ├── widgets/
-│           └── cubit/              # ViewModel layer
-│               ├── feature_cubit.dart
-│               ├── feature_state.dart
-│               └── feature_cubit.freezed.dart
+│           └── view_models/        # ViewModel layer (ChangeNotifier)
+│               ├── user_view_model.dart
+│               └── user_state.dart
 ├── router/
 │   └── app_router.dart             # GoRouter configuration
 └── main.dart
 ```
 
-**Note**: No `domain/` folder - business logic lives in Cubits
+**Note**: No `domain/` folder - business logic lives in ViewModels
 
 ### Model Class Example
 ```dart
@@ -256,6 +272,22 @@ class User with _$User {
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+```
+
+### State Class Example (Freezed)
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'user_state.freezed.dart';
+
+@freezed
+class UserState with _$UserState {
+  const factory UserState.initial() = _Initial;
+  const factory UserState.loading() = _Loading;
+  const factory UserState.loaded(User user) = _Loaded;
+  const factory UserState.loadedList(List<User> users) = _LoadedList;
+  const factory UserState.error(String message) = _Error;
 }
 ```
 
@@ -319,73 +351,94 @@ class UserRepositoryImpl implements UserRepository {
 }
 ```
 
-### Cubit Pattern (ViewModel with Business Logic)
+### ViewModel Pattern (ChangeNotifier with Business Logic)
 ```dart
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
 
-part 'user_state.dart';
-part 'user_cubit.freezed.dart';
-
-class UserCubit extends Cubit<UserState> {
+class UserViewModel extends ChangeNotifier {
   final UserRepository _repository;
 
-  UserCubit(this._repository) : super(const UserState.initial());
+  UserViewModel(this._repository);
+
+  // State
+  UserState _state = const UserState.initial();
+  UserState get state => _state;
+
+  // Helper method to update state
+  void _setState(UserState newState) {
+    _state = newState;
+    notifyListeners();
+  }
 
   // Business logic: Load user
   Future<void> loadUser(String id) async {
-    emit(const UserState.loading());
+    _setState(const UserState.loading());
     
     final result = await _repository.getUser(id);
     
     result.fold(
-      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
-      (user) => emit(UserState.loaded(user)),
+      (failure) => _setState(UserState.error(_mapFailureToMessage(failure))),
+      (user) => _setState(UserState.loaded(user)),
     );
   }
 
   // Business logic: Update user with validation
   Future<void> updateUser(User user) async {
-    // Validation logic in Cubit
+    // Validation logic in ViewModel
     if (user.name.isEmpty) {
-      emit(const UserState.error('Name cannot be empty'));
+      _setState(const UserState.error('Name cannot be empty'));
       return;
     }
 
     if (!_isValidEmail(user.email)) {
-      emit(const UserState.error('Invalid email format'));
+      _setState(const UserState.error('Invalid email format'));
       return;
     }
 
-    emit(const UserState.loading());
+    _setState(const UserState.loading());
     
     final result = await _repository.updateUser(user);
     
     result.fold(
-      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
-      (_) => emit(UserState.loaded(user)),
+      (failure) => _setState(UserState.error(_mapFailureToMessage(failure))),
+      (_) => _setState(UserState.loaded(user)),
     );
   }
 
   // Business logic: Load all users and filter
   Future<void> loadActiveUsers() async {
-    emit(const UserState.loading());
+    _setState(const UserState.loading());
     
     final result = await _repository.getAllUsers();
     
     result.fold(
-      (failure) => emit(UserState.error(_mapFailureToMessage(failure))),
+      (failure) => _setState(UserState.error(_mapFailureToMessage(failure))),
       (users) {
         // Business logic: filter active users
         final activeUsers = users.where((user) => user.isActive).toList();
-        emit(UserState.loadedList(activeUsers));
+        _setState(UserState.loadedList(activeUsers));
       },
     );
   }
 
   // Helper methods for business logic
   bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    if (failure is ServerFailure) {
+      return 'Server error. Please try again.';
+    } else if (failure is CacheFailure) {
+      return 'Local data error.';
+    } else if (failure is NetworkFailure) {
+      return 'No internet connection.';
+    }
+    return 'Unexpected error occurred.';
+  }
+}
+```
 
 ### Failure Classes Example
 ```dart
@@ -416,12 +469,13 @@ class ValidationFailure extends Failure {
                    │
                    ↓
 ┌─────────────────────────────────────────────────────┐
-│              ViewModel (Cubit)                      │
+│         ViewModel (ChangeNotifier)                  │
 │  - Injected via GetIt in app_router.dart           │
 │  - Contains business logic                          │
 │  - Validates data                                   │
 │  - Transforms data for UI                           │
 │  - Handles state management                         │
+│  - Calls notifyListeners() after state changes      │
 └──────────────────┬──────────────────────────────────┘
                    │
                    ↓
@@ -463,18 +517,18 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // Cubits - registered as factories (new instance each time)
+  // ViewModels - registered as factories (new instance each time)
   getIt.registerFactory(
-    () => UserCubit(getIt<UserRepository>()),
+    () => UserViewModel(getIt<UserRepository>()),
   );
 }
 ```
 
-### GoRouter Configuration with BlocProvider
+### GoRouter Configuration with ChangeNotifierProvider
 ```dart
 // router/app_router.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/di/injection.dart';
 
@@ -486,30 +540,30 @@ final appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     
-    // Provide Cubit at route level using GetIt
+    // Provide ViewModel at route level using GetIt
     GoRoute(
       path: '/user/:id',
       builder: (context, state) {
         final userId = state.pathParameters['id']!;
         
-        return BlocProvider(
-          create: (context) => getIt<UserCubit>()..loadUser(userId),
+        return ChangeNotifierProvider(
+          create: (context) => getIt<UserViewModel>()..loadUser(userId),
           child: const UserScreen(),
         );
       },
     ),
     
-    // Example with multiple Cubits
+    // Example with multiple ViewModels
     GoRoute(
       path: '/profile',
       builder: (context, state) {
-        return MultiBlocProvider(
+        return MultiProvider(
           providers: [
-            BlocProvider(
-              create: (context) => getIt<ProfileCubit>()..loadProfile(),
+            ChangeNotifierProvider(
+              create: (context) => getIt<ProfileViewModel>()..loadProfile(),
             ),
-            BlocProvider(
-              create: (context) => getIt<SettingsCubit>()..loadSettings(),
+            ChangeNotifierProvider(
+              create: (context) => getIt<SettingsViewModel>()..loadSettings(),
             ),
           ],
           child: const ProfileScreen(),
@@ -523,8 +577,8 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final user = state.extra as User;
         
-        return BlocProvider(
-          create: (context) => getIt<UserCubit>()..setUser(user),
+        return ChangeNotifierProvider(
+          create: (context) => getIt<UserViewModel>()..setUser(user),
           child: const EditUserScreen(),
         );
       },
@@ -592,51 +646,53 @@ context.pushNamed(
 );
 ```
 
-### Using Cubit in UI
+### Using ViewModel in UI with Consumer
 ```dart
-// Screen receives Cubit from router - NO manual instantiation
+// Screen receives ViewModel from router - NO manual instantiation
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Cubit is already provided by BlocProvider in app_router.dart
+    // ViewModel is already provided by ChangeNotifierProvider in app_router.dart
     return Scaffold(
       appBar: AppBar(title: const Text('User Profile')),
-      body: BlocConsumer<UserCubit, UserState>(
-        listener: (context, state) {
-          state.whenOrNull(
-            error: (message) => ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            ),
-          );
-        },
-        builder: (context, state) {
-          return state.when(
+      body: Consumer<UserViewModel>(
+        builder: (context, viewModel, child) {
+          return viewModel.state.when(
             initial: () => const SizedBox.shrink(),
             loading: () => const Center(child: CircularProgressIndicator()),
-            loaded: (user) => _buildUserContent(context, user),
-            loadedList: (users) => _buildUserList(users),
-            error: (message) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(message),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.read<UserCubit>().loadUser('user123'),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
+            loaded: (user) => _buildUserContent(context, user, viewModel),
+            loadedList: (users) => _buildUserList(context, users, viewModel),
+            error: (message) {
+              // Show error snackbar
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              });
+              
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(message),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => viewModel.loadUser('user123'),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildUserContent(BuildContext context, User user) {
+  Widget _buildUserContent(BuildContext context, User user, UserViewModel viewModel) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -648,7 +704,7 @@ class UserScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final updatedUser = user.copyWith(name: 'New Name');
-              context.read<UserCubit>().updateUser(updatedUser);
+              viewModel.updateUser(updatedUser);
             },
             child: const Text('Update User'),
           ),
@@ -665,7 +721,7 @@ class UserScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserList(List<User> users) {
+  Widget _buildUserList(BuildContext context, List<User> users, UserViewModel viewModel) {
     return ListView.builder(
       itemCount: users.length,
       itemBuilder: (context, index) {
@@ -681,45 +737,81 @@ class UserScreen extends StatelessWidget {
 }
 ```
 
+### Using Selector for Optimized Rebuilds
+```dart
+// Only rebuild when specific state property changes
+class UserNameWidget extends StatelessWidget {
+  const UserNameWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<UserViewModel, UserState>(
+      selector: (context, viewModel) => viewModel.state,
+      builder: (context, state, child) {
+        return state.maybeWhen(
+          loaded: (user) => Text(user.name),
+          orElse: () => const Text('No user'),
+        );
+      },
+    );
+  }
+}
+```
+
+### Accessing ViewModel without Rebuilding
+```dart
+// Use context.read() to access ViewModel without listening to changes
+ElevatedButton(
+  onPressed: () {
+    context.read<UserViewModel>().loadUser('123');
+  },
+  child: const Text('Load User'),
+)
+```
+
 ## Additional Instructions for AI Agents
 
 **CRITICAL ARCHITECTURE RULES (MVVM):**
 - **Follow MVVM pattern STRICTLY** - only `data/` and `presentation/` folders in features
-- **NO domain layer, NO use cases** - all business logic goes directly in Cubits
-- **Cubit = ViewModel** - contains all business logic, validation, and data transformation
+- **NO domain layer, NO use cases** - all business logic goes directly in ViewModels
+- **ViewModel = ChangeNotifier** - contains all business logic, validation, and data transformation
 - **Repository = Model** - only handles data fetching/caching, no business logic
-- **Widgets = View** - only UI and user interaction, delegates all logic to Cubit
+- **Widgets = View** - only UI and user interaction, delegates all logic to ViewModel
 
 **CRITICAL DEPENDENCY INJECTION RULES (GetIt):**
-- **NEVER manually instantiate** repositories, data sources, or Cubits
+- **NEVER manually instantiate** repositories, data sources, or ViewModels
 - **ALWAYS use GetIt** for dependency injection: `getIt<ClassName>()`
 - **Register data sources and repositories as lazy singletons** in injection.dart
-- **Register Cubits as factories** (not singletons) so each route gets a fresh instance
+- **Register ViewModels as factories** (not singletons) so each route gets a fresh instance
 - **Inject dependencies via constructor** - never use service locator pattern inside classes
 - **Setup GetIt in main.dart** before running the app
 
 **CRITICAL ROUTING RULES (GoRouter):**
 - **ALL navigation must use GoRouter** - never use Navigator.push or MaterialPageRoute
 - **Define all routes in app_router.dart** - single source of truth for routing
-- **Provide Cubits at route level** in app_router.dart using BlocProvider
-- **Inject Cubits using GetIt** in the route builder: `getIt<UserCubit>()`
-- **Never create BlocProvider inside screens** - always in app_router.dart
+- **Provide ViewModels at route level** in app_router.dart using ChangeNotifierProvider
+- **Inject ViewModels using GetIt** in the route builder: `getIt<UserViewModel>()`
+- **Never create ChangeNotifierProvider inside screens** - always in app_router.dart
 - Use `context.go()` for navigation, `context.push()` for stacking, `context.pop()` for back
 - Pass data using `extra` parameter or path/query parameters
 
-**CRITICAL STATE MANAGEMENT RULES:**
-- **ALWAYS use Cubit** for state management (never Provider, Riverpod, GetX, or other solutions)
+**CRITICAL STATE MANAGEMENT RULES (Provider):**
+- **ALWAYS use Provider with ChangeNotifier** for state management (never Cubit, Bloc, Riverpod, GetX, or other solutions)
+- **ALWAYS call notifyListeners()** after state changes in ViewModel
+- **Use Consumer<T>** to rebuild widgets when ViewModel state changes
+- **Use Selector<T, S>** for optimized rebuilds (only rebuild when specific properties change)
+- **Use context.read<T>()** to access ViewModel without listening to changes
 - **ALWAYS use Either from dartz** for error handling in repositories
 - **NEVER use Result, Try, or other error handling patterns** - only Either<Failure, Success>
-- **NEVER create UseCase classes** - Cubits call repositories directly
 
-**CUBIT RESPONSIBILITY (ViewModel):**
+**VIEWMODEL RESPONSIBILITY (ChangeNotifier):**
 - Data validation (email format, required fields, etc.)
 - Business rules (age limits, calculation logic, etc.)
 - Data transformation (formatting, filtering, sorting)
 - Calling repositories to fetch/save data (injected via GetIt)
 - Mapping failures to user-friendly messages
 - Managing UI state (loading, success, error)
+- **MUST call notifyListeners()** after every state change
 
 **REPOSITORY RESPONSIBILITY (Model):**
 - Fetching data from API/Database
@@ -730,10 +822,11 @@ class UserScreen extends StatelessWidget {
 
 **SCREEN RESPONSIBILITY (View):**
 - Display UI and handle user interactions
-- Read Cubit from context (never create it): `context.read<UserCubit>()`
-- Listen to state changes using BlocBuilder/BlocListener/BlocConsumer
+- Read ViewModel from context using Consumer or Selector
+- Listen to state changes and rebuild UI accordingly
 - Navigate using GoRouter: `context.go()`, `context.push()`
 - NO business logic, NO direct repository access
+- **Never create ChangeNotifierProvider** - it's provided by the router
 
 1. **Always ask for clarification** if requirements are ambiguous
 2. **Suggest improvements** if you notice code smells or better patterns
@@ -743,165 +836,10 @@ class UserScreen extends StatelessWidget {
 6. **Update tests** whenever you modify business logic
 7. **Consider backwards compatibility** when modifying existing code
 8. **Think about edge cases** and handle them explicitly
-9. **Use freezed for Cubit states** - all states must be freezed unions
+9. **Use freezed for ViewModel states** - all states must be freezed unions
 10. **Implement proper Failure classes** for all error types in the app
-11. **Keep business logic in Cubits ONLY** - never in repositories or widgets
+11. **Keep business logic in ViewModels ONLY** - never in repositories or widgets
 12. **Always register new dependencies in injection.dart** when creating new features
-13. **Always add new routes in app_router.dart** - never hardcode navigation).hasMatch(email);
-  }
-
-  String _mapFailureToMessage(Failure failure) {
-    if (failure is ServerFailure) {
-      return 'Server error. Please try again.';
-    } else if (failure is CacheFailure) {
-      return 'Local data error.';
-    } else if (failure is NetworkFailure) {
-      return 'No internet connection.';
-    }
-    return 'Unexpected error occurred.';
-  }
-}
-
-// user_state.dart
-@freezed
-class UserState with _$UserState {
-  const factory UserState.initial() = _Initial;
-  const factory UserState.loading() = _Loading;
-  const factory UserState.loaded(User user) = _Loaded;
-  const factory UserState.loadedList(List<User> users) = _LoadedList;
-  const factory UserState.error(String message) = _Error;
-}
-```
-
-### Failure Classes Example
-```dart
-abstract class Failure {
-  const Failure();
-}
-
-class ServerFailure extends Failure {}
-
-class CacheFailure extends Failure {}
-
-class NetworkFailure extends Failure {}
-
-class ValidationFailure extends Failure {
-  final String message;
-  const ValidationFailure(this.message);
-}
-```
-
-### UseCase Pattern Example
-```dart
-import 'package:dartz/dartz.dart';
-
-abstract class UseCase<Type, Params> {
-  Future<Either<Failure, Type>> call(Params params);
-}
-
-class GetUserUseCase implements UseCase<User, String> {
-  final UserRepository repository;
-
-  GetUserUseCase(this.repository);
-
-  @override
-  Future<Either<Failure, User>> call(String userId) async {
-    return await repository.getUser(userId);
-  }
-}
-
-class UpdateUserUseCase implements UseCase<Unit, User> {
-  final UserRepository repository;
-
-  UpdateUserUseCase(this.repository);
-
-  @override
-  Future<Either<Failure, Unit>> call(User user) async {
-    return await repository.updateUser(user);
-  }
-}
-
-// For use cases with no parameters
-class NoParams {}
-```
-
-### Using Cubit in UI
-```dart
-class UserScreen extends StatelessWidget {
-  const UserScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserCubit(
-        context.read<GetUserUseCase>(),
-        context.read<UpdateUserUseCase>(),
-      )..loadUser('user123'),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('User Profile')),
-        body: BlocConsumer<UserCubit, UserState>(
-          listener: (context, state) {
-            state.whenOrNull(
-              error: (message) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              ),
-            );
-          },
-          builder: (context, state) {
-            return state.when(
-              initial: () => const SizedBox.shrink(),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (user) => _buildUserContent(user),
-              error: (message) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => context.read<UserCubit>().loadUser('user123'),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUserContent(User user) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Name: ${user.name}'),
-          Text('Email: ${user.email}'),
-        ],
-      ),
-    );
-  }
-}
-```
-
-## Additional Instructions for AI Agents
-
-**CRITICAL STATE MANAGEMENT RULES:**
-- **ALWAYS use Cubit** for state management (never Provider, Riverpod, GetX, or other solutions)
-- **ALWAYS use Either from dartz** for error handling in repositories and use cases
-- **NEVER use Result, Try, or other error handling patterns** - only Either<Failure, Success>
-
-1. **Always ask for clarification** if requirements are ambiguous
-2. **Suggest improvements** if you notice code smells or better patterns
-3. **Explain your decisions** when implementing complex solutions
-4. **Provide alternatives** when multiple valid approaches exist
-5. **Flag potential issues** before they become problems
-6. **Update tests** whenever you modify business logic
-7. **Consider backwards compatibility** when modifying existing code
-8. **Think about edge cases** and handle them explicitly
-9. **Use freezed for Cubit states** - all states must be freezed unions
-10. **Implement proper Failure classes** for all error types in the app
+13. **Always add new routes in app_router.dart** - never hardcode navigation
+14. **Always call notifyListeners()** after updating state in ViewModels
 ---

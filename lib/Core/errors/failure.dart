@@ -36,7 +36,7 @@ class ServerFailure extends Failure {
 
   factory ServerFailure.fromResponse(int? statusCode, dynamic response) {
     if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      return ServerFailure(errorMessage: response['message']);
+      return ServerFailure(errorMessage: _extractMessage(response));
     } else if (statusCode == 404) {
       return ServerFailure(
         errorMessage: 'Your Requested Content Not Found Try Again Later',
@@ -53,10 +53,21 @@ class ServerFailure extends Failure {
         errorMessage: 'Internal Server Error Try Again Later',
       );
     } else {
-      return ServerFailure(
-        errorMessage: response['message'] ?? 'Unexpected error occurred',
-      );
+      return ServerFailure(errorMessage: _extractMessage(response));
     }
+  }
+
+  static String _extractMessage(dynamic response) {
+    if (response is Map<String, dynamic> && response.containsKey('message')) {
+      final message = response['message'];
+
+      if (message is String) {
+        return message;
+      } else if (message is List) {
+        return message.join('\n');
+      }
+    }
+    return 'Unexpected error occurred';
   }
 
   static String _parseValidationErrors(Map<String, dynamic> response) {
