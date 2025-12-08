@@ -2,16 +2,18 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:stylish/Core/errors/failure.dart';
 import 'package:stylish/Core/services/api_service.dart';
+import 'package:stylish/Core/services/secure_storage_service.dart';
 import 'package:stylish/Core/utils/app_endpoints.dart';
 import 'package:stylish/Features/auth/data/repos/auth_repo.dart';
 
 class AuthRepoImplementation implements AuthRepo {
   final ApiService _apiService;
+  final SecureStorageService _secureStorage;
 
   // Default placeholder avatar URL
   static const String _defaultAvatarUrl = 'https://i.pravatar.cc/150?img=1';
 
-  AuthRepoImplementation(this._apiService);
+  AuthRepoImplementation(this._apiService, this._secureStorage);
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> register({
@@ -30,11 +32,43 @@ class AuthRepoImplementation implements AuthRepo {
       };
 
       final response = await _apiService.post(
-        AppEndpoints.createUser,
+        AppEndpoints.register,
         registrationData,
       );
 
       return Right(response as Map<String, dynamic>);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          errorMessage: 'An unexpected error occurred: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final loginData = {'email': email, 'password': password};
+
+      final response = await _apiService.post(AppEndpoints.login, loginData);
+
+      final responseMap = response as Map<String, dynamic>;
+
+      if (responseMap.containsKey('access_token')) {
+        await _secureStorage.saveAccessToken(responseMap['access_token']);
+      }
+
+      if (responseMap.containsKey('refresh_token')) {
+        await _secureStorage.saveRefreshToken(responseMap['refresh_token']);
+      }
+
+      return Right(responseMap);
     } on DioException catch (e) {
       return Left(ServerFailure.fromDioException(e));
     } catch (e) {

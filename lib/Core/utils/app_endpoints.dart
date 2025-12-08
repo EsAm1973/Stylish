@@ -1,3 +1,4 @@
 abstract class AppEndpoints {
-  static const String createUser = 'users/';
+  static const String register = 'users/';
+  static const String login = 'auth/login/';
 }
