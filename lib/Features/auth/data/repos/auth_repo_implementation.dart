@@ -2,18 +2,20 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:stylish/Core/errors/failure.dart';
 import 'package:stylish/Core/services/api_service.dart';
-import 'package:stylish/Core/services/secure_storage_service.dart';
+
 import 'package:stylish/Core/utils/app_endpoints.dart';
+import 'package:fresh_dio/fresh_dio.dart';
+import 'package:stylish/Features/auth/data/model/authentication_pair.dart';
 import 'package:stylish/Features/auth/data/repos/auth_repo.dart';
 
 class AuthRepoImplementation implements AuthRepo {
   final ApiService _apiService;
-  final SecureStorageService _secureStorage;
+  final Fresh<TokensPair> _fresh;
 
   // Default placeholder avatar URL
   static const String _defaultAvatarUrl = 'https://i.pravatar.cc/150?img=1';
 
-  AuthRepoImplementation(this._apiService, this._secureStorage);
+  AuthRepoImplementation(this._apiService, this._fresh);
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> register({
@@ -60,13 +62,9 @@ class AuthRepoImplementation implements AuthRepo {
 
       final responseMap = response as Map<String, dynamic>;
 
-      if (responseMap.containsKey('access_token')) {
-        await _secureStorage.saveAccessToken(responseMap['access_token']);
-      }
-
-      if (responseMap.containsKey('refresh_token')) {
-        await _secureStorage.saveRefreshToken(responseMap['refresh_token']);
-      }
+      // Save tokens
+      final tokens = TokensPair.fromJson(responseMap);
+      await _fresh.setToken(tokens);
 
       return Right(responseMap);
     } on DioException catch (e) {

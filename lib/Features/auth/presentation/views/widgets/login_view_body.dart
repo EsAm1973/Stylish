@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Core/widgets/custom_button.dart';
 import 'package:stylish/Features/auth/presentation/manager/login/login_cubit.dart';
 import 'package:stylish/Features/auth/presentation/manager/login/login_state.dart';
@@ -22,17 +23,7 @@ class LoginViewBody extends StatelessWidget {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => const AuthDialog(
-              isSuccess: true,
-              message: 'Login successful! Welcome back.',
-            ),
-          ).then((_) {
-            // Navigate to home page - update this route when home is ready
-            GoRouter.of(context).pop();
-          });
+          GoRouter.of(context).pushReplacement(AppRouter.kHomeRoute);
         } else if (state is LoginFailure) {
           showDialog(
             context: context,

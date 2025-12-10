@@ -7,6 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stylish/Core/services/shared_prefs.dart';
 import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/constants.dart';
+import 'package:stylish/Core/services/getit_service.dart';
+import 'package:fresh_dio/fresh_dio.dart';
+import 'package:stylish/Features/auth/data/model/authentication_pair.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -23,14 +26,31 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void navigateToNextScreen() async {
+    // Check for existing token
+    final tokenStorage = getit<TokenStorage<TokensPair>>();
+    final token = await tokenStorage.read();
+
+    if (token != null) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          GoRouter.of(context).pushReplacement(AppRouter.kHomeRoute);
+        }
+      });
+      return;
+    }
+
     bool isOnboardingViewed = Prefs.getBool(isOnboadingViewSeenKey);
     if (isOnboardingViewed) {
       Future.delayed(const Duration(seconds: 2), () {
-        GoRouter.of(context).pushReplacement(AppRouter.kLoginRoute);
+        if (mounted) {
+          GoRouter.of(context).pushReplacement(AppRouter.kLoginRoute);
+        }
       });
     } else {
       Future.delayed(const Duration(seconds: 2), () {
-        GoRouter.of(context).pushReplacement(AppRouter.kOnboardingRoute);
+        if (mounted) {
+          GoRouter.of(context).pushReplacement(AppRouter.kOnboardingRoute);
+        }
       });
     }
   }

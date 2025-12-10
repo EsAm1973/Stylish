@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stylish/Features/home/presentation/views/home_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Core/services/getit_service.dart';
 import 'package:stylish/Features/auth/data/repos/auth_repo.dart';
@@ -12,6 +13,7 @@ import 'package:stylish/Features/onboarding/presentation/views/onboarding_view.d
 
 abstract class AppRouter {
   static const String kSplashRoute = '/';
+  static const String kHomeRoute = '/home';
   static const String kOnboardingRoute = '/onboarding';
   static const String kLoginRoute = '/login';
   static const String kSignupRoute = '/signup';
@@ -45,6 +47,7 @@ abstract class AppRouter {
         path: kForgetPasswordRoute,
         builder: (context, state) => const ForgetPassView(),
       ),
+      GoRoute(path: kHomeRoute, builder: (context, state) => const HomeView()),
     ],
   );
 }
