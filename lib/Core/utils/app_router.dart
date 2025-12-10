@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
 import 'package:stylish/Features/home/presentation/views/home_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Core/services/getit_service.dart';
@@ -18,6 +19,7 @@ abstract class AppRouter {
   static const String kLoginRoute = '/login';
   static const String kSignupRoute = '/signup';
   static const String kForgetPasswordRoute = '/forgetPassword';
+  static const String kGetStartedRoute = '/getStarted';
 
   static final router = GoRouter(
     routes: [
@@ -48,6 +50,10 @@ abstract class AppRouter {
         builder: (context, state) => const ForgetPassView(),
       ),
       GoRoute(path: kHomeRoute, builder: (context, state) => const HomeView()),
+      GoRoute(
+        path: kGetStartedRoute,
+        builder: (context, state) => const GetStartedView(),
+      ),
     ],
   );
 }

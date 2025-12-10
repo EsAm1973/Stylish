@@ -23,7 +23,7 @@ class LoginViewBody extends StatelessWidget {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          GoRouter.of(context).pushReplacement(AppRouter.kHomeRoute);
+          GoRouter.of(context).pushReplacement(AppRouter.kGetStartedRoute);
         } else if (state is LoginFailure) {
           showDialog(
             context: context,

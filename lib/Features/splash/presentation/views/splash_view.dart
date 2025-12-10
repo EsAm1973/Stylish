@@ -30,29 +30,29 @@ class _SplashViewState extends State<SplashView> {
     final tokenStorage = getit<TokenStorage<TokensPair>>();
     final token = await tokenStorage.read();
 
+    String route;
+
     if (token != null) {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          GoRouter.of(context).pushReplacement(AppRouter.kHomeRoute);
-        }
-      });
-      return;
+      bool isGetStartedViewed = Prefs.getBool(isGetStartedViewSeenKey);
+      if (isGetStartedViewed) {
+        route = AppRouter.kHomeRoute;
+      } else {
+        route = AppRouter.kGetStartedRoute;
+      }
+    } else {
+      bool isOnboardingViewed = Prefs.getBool(isOnboadingViewSeenKey);
+      if (isOnboardingViewed) {
+        route = AppRouter.kLoginRoute;
+      } else {
+        route = AppRouter.kOnboardingRoute;
+      }
     }
 
-    bool isOnboardingViewed = Prefs.getBool(isOnboadingViewSeenKey);
-    if (isOnboardingViewed) {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          GoRouter.of(context).pushReplacement(AppRouter.kLoginRoute);
-        }
-      });
-    } else {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          GoRouter.of(context).pushReplacement(AppRouter.kOnboardingRoute);
-        }
-      });
-    }
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        GoRouter.of(context).pushReplacement(route);
+      }
+    });
   }
 
   @override

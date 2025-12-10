@@ -11,7 +11,7 @@ class SignupTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Create an account',
+          'Create\nan account',
           style: AppTextStyles.bold36.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
