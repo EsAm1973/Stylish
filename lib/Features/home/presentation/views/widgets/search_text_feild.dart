@@ -11,17 +11,7 @@ class SearchTextField extends StatelessWidget {
       margin: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(20.r), // Rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(
-              context,
-            ).primaryColor.withValues(alpha: .1), // Soft subtle shadow
-            blurRadius: 10.r,
-            spreadRadius: 1,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: TextField(
         decoration: InputDecoration(
