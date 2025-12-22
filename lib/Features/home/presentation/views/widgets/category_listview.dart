@@ -17,8 +17,8 @@ class CategoryListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 110.h,
-      margin: EdgeInsets.symmetric(vertical: 16.h),
+      height: 100.h,
+      margin: EdgeInsets.symmetric(vertical: 10.h),
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
