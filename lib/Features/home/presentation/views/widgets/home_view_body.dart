@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stylish/Core/widgets/custom_sliver_appbar.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/category_listview.dart';
+import 'package:stylish/Features/home/presentation/views/widgets/deal_listview.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_of_theday.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/discount_carousel.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/feature_header.dart';
@@ -20,6 +21,12 @@ class HomeViewBody extends StatelessWidget {
         const SliverToBoxAdapter(child: DiscountCarousel()),
         const SliverToBoxAdapter(child: SizedBox(height: 16.0)),
         const SliverToBoxAdapter(child: DealOfTheDayBanner()),
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: DealListView(),
+          ),
+        ),
       ],
     );
   }
