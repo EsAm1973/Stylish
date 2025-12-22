@@ -12,7 +12,7 @@ class DiscountOffer extends StatelessWidget {
       height: 220.h,
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(15.r),
         image: const DecorationImage(
           image: AssetImage('assets/images/discount_offer.png'),
           fit: BoxFit.cover,
