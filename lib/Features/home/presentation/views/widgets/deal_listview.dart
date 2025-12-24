@@ -14,7 +14,7 @@ class _DealListViewState extends State<DealListView> {
   final ScrollController _scrollController = ScrollController();
 
   // Helper method to calculate item width based on screen size
-  double get _getItemWidth => (MediaQuery.of(context).size.width - 32.w) / 2;
+  double get _getItemWidth => (MediaQuery.of(context).size.width - 20.w) / 2;
 
   void _scrollForward() {
     // Scroll by the width of exactly one item
@@ -36,7 +36,7 @@ class _DealListViewState extends State<DealListView> {
     final double itemWidth = _getItemWidth;
 
     return SizedBox(
-      height: 280.h,
+      height: 270.h,
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
