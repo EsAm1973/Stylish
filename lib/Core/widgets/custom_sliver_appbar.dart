@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
+import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
+import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_state.dart';
 
 class CustomSliverAppBar extends StatelessWidget {
   const CustomSliverAppBar({super.key});
@@ -53,26 +56,43 @@ class CustomSliverAppBar extends StatelessWidget {
 
       // 3. Profile Avatar (Right)
       actions: [
-        Padding(
-          padding: EdgeInsets.only(right: 16.0.w),
-          child: CachedNetworkImage(
-            imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-            imageBuilder: (context, imageProvider) => CircleAvatar(
-              radius: 22.r,
-              backgroundColor: Theme.of(context).primaryColor,
-              backgroundImage: imageProvider,
-            ),
-            placeholder: (context, url) => CircleAvatar(
-              radius: 22.r,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const CircularProgressIndicator(strokeWidth: 2),
-            ),
-            errorWidget: (context, url, error) => CircleAvatar(
-              radius: 22.r,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.person),
-            ),
-          ),
+        BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            if (state is ProfileLoading) {
+              return const Padding(
+                padding: EdgeInsets.only(right: 16.0),
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is ProfileSuccess) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: CachedNetworkImage(
+                  imageUrl: state.user.avatar,
+                  imageBuilder: (context, imageProvider) => CircleAvatar(
+                    radius: 22.r,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundImage: imageProvider,
+                  ),
+                  placeholder: (context, url) => CircleAvatar(
+                    radius: 22.r,
+                    backgroundColor: Colors.transparent,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0.r),
+                      child: const CircularProgressIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => CircleAvatar(
+                    radius: 22.r,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: const Icon(Icons.person),
+                  ),
+                ),
+              );
+            } else if (state is ProfileFailure) {
+              return const Center(child: Icon(Icons.error));
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ],
     );

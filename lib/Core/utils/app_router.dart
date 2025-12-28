@@ -11,6 +11,7 @@ import 'package:stylish/Features/auth/presentation/views/login_view.dart';
 import 'package:stylish/Features/auth/presentation/views/signup_view.dart';
 import 'package:stylish/Features/splash/presentation/views/splash_view.dart';
 import 'package:stylish/Features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
 
 abstract class AppRouter {
   static const String kSplashRoute = '/';
@@ -49,7 +50,13 @@ abstract class AppRouter {
         path: kForgetPasswordRoute,
         builder: (context, state) => const ForgetPassView(),
       ),
-      GoRoute(path: kHomeRoute, builder: (context, state) => const HomeView()),
+      GoRoute(
+        path: kHomeRoute,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getit<ProfileCubit>(),
+          child: const HomeView(),
+        ),
+      ),
       GoRoute(
         path: kGetStartedRoute,
         builder: (context, state) => const GetStartedView(),

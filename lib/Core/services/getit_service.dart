@@ -8,6 +8,9 @@ import 'package:stylish/Features/auth/data/datasource/token_refresh_interceptor.
 import 'package:stylish/Features/auth/data/model/authentication_pair.dart';
 import 'package:stylish/Features/auth/data/repos/auth_repo.dart';
 import 'package:stylish/Features/auth/data/repos/auth_repo_implementation.dart';
+import 'package:stylish/Features/home/data/repos/profile_repo.dart';
+import 'package:stylish/Features/home/data/repos/profile_repo_impl.dart';
+import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
 
 final getit = GetIt.instance;
 
@@ -63,4 +66,10 @@ void setupGetIt() {
       getit<Fresh<TokensPair>>(), // Inject Fresh to save tokens
     ),
   );
+
+  getit.registerLazySingleton<ProfileRepo>(
+    () => ProfileRepoImpl(getit<ApiService>()),
+  );
+
+  getit.registerFactory<ProfileCubit>(() => ProfileCubit(getit<ProfileRepo>()));
 }

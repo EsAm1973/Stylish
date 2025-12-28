@@ -2,13 +2,14 @@ import 'package:dio/dio.dart';
 
 class ApiService {
   final Dio dio;
-  final String baseUrl = 'https://api.escuelajs.co/api/v1/';
 
   ApiService({required this.dio});
 
   Future<dynamic> get(String endPoint, {Map<String, dynamic>? headers}) async {
-    final fullUrl = '$baseUrl$endPoint';
-    final response = await dio.get(fullUrl, options: Options(headers: headers));
+    final response = await dio.get(
+      endPoint,
+      options: Options(headers: headers),
+    );
     return response.data;
   }
 
@@ -17,9 +18,8 @@ class ApiService {
     dynamic data, {
     Map<String, dynamic>? headers,
   }) async {
-    final fullUrl = '$baseUrl$endPoint';
     final response = await dio.post(
-      fullUrl,
+      endPoint,
       data: data,
       options: Options(headers: headers),
     );
@@ -31,9 +31,8 @@ class ApiService {
     dynamic data, {
     Map<String, dynamic>? headers,
   }) async {
-    final fullUrl = '$baseUrl$endPoint';
     final response = await dio.put(
-      fullUrl,
+      endPoint,
       data: data,
       options: Options(headers: headers),
     );
@@ -44,9 +43,8 @@ class ApiService {
     String endPoint, {
     Map<String, dynamic>? headers,
   }) async {
-    final fullUrl = '$baseUrl$endPoint';
     final response = await dio.delete(
-      fullUrl,
+      endPoint,
       options: Options(headers: headers),
     );
     return response.data;

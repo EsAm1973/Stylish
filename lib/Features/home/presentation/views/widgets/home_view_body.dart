@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish/Core/widgets/custom_sliver_appbar.dart';
+import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/category_listview.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_listview.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_of_theday.dart';
@@ -9,8 +11,19 @@ import 'package:stylish/Features/home/presentation/views/widgets/search_text_fei
 import 'package:stylish/Features/home/presentation/views/widgets/trending_products_list.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trinding_products.dart';
 
-class HomeViewBody extends StatelessWidget {
+class HomeViewBody extends StatefulWidget {
   const HomeViewBody({super.key});
+
+  @override
+  State<HomeViewBody> createState() => _HomeViewBodyState();
+}
+
+class _HomeViewBodyState extends State<HomeViewBody> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileCubit>().fetchUserProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
