@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:stylish/Features/home/data/models/category_model.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_state.dart';
+import 'package:stylish/Features/home/data/models/category_model.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/category_item.dart';
+import 'package:stylish/Features/home/presentation/views/widgets/category_item_shimmer.dart';
 
 class CategoryListView extends StatelessWidget {
   const CategoryListView({super.key});
@@ -19,10 +19,17 @@ class CategoryListView extends StatelessWidget {
         } else if (state is CategoriesFailure) {
           return Center(child: Text(state.failure.errorMessage));
         } else {
-          return Skeletonizer(
-            enabled: true,
-            enableSwitchAnimation: true,
-            child: _buildCategoriesList(_dummyCategories),
+          return Container(
+            height: 100.h,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                return const CategoryItemShimmer();
+              },
+            ),
           );
         }
       },
@@ -44,14 +51,4 @@ class CategoryListView extends StatelessWidget {
       ),
     );
   }
-
-  static final List<CategoryModel> _dummyCategories = List.generate(
-    5,
-    (index) => CategoryModel(
-      id: index,
-      name: 'Category $index',
-      slug: 'slug-$index',
-      image: 'https://placehold.co/600x400',
-    ),
-  );
 }

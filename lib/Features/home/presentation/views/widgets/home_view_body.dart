@@ -34,23 +34,23 @@ class _HomeViewBodyState extends State<HomeViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomScrollView(
+    return CustomScrollView(
       slivers: [
-        CustomSliverAppBar(),
-        SliverToBoxAdapter(child: SearchTextField()),
-        SliverToBoxAdapter(child: FeaturedHeader()),
-        SliverToBoxAdapter(child: CategoryListView()),
-        SliverToBoxAdapter(child: DiscountCarousel()),
-        SliverToBoxAdapter(child: SizedBox(height: 16.0)),
-        SliverToBoxAdapter(child: DealOfTheDayBanner()),
-        SliverToBoxAdapter(
+        const CustomSliverAppBar(),
+        const SliverToBoxAdapter(child: SearchTextField()),
+        const SliverToBoxAdapter(child: FeaturedHeader()),
+        const SliverToBoxAdapter(child: CategoryListView()),
+        const SliverToBoxAdapter(child: DiscountCarousel()),
+        const SliverToBoxAdapter(child: SizedBox(height: 16.0)),
+        const SliverToBoxAdapter(child: DealOfTheDayBanner()),
+        const SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: DealListView(),
           ),
         ),
-        SliverToBoxAdapter(child: TrendingProductsBanner()),
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(child: TrendingProductsBanner()),
+        const SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: TrendingProductsList(),

@@ -1,4 +1,4 @@
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:stylish/Core/widgets/custom_shimmer.dart';
 import 'package:stylish/Core/utils/app_colors.dart';
 import 'package:stylish/Features/home/data/models/user_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -61,40 +61,41 @@ class CustomSliverAppBar extends StatelessWidget {
       actions: [
         BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
-            final isSuccess = state is ProfileSuccess;
-            final user = isSuccess ? state.user : _dummyUser;
-
-            return Skeletonizer(
-              enabled: state is ProfileLoading,
-              child: Padding(
+            if (state is ProfileLoading) {
+              return Padding(
                 padding: const EdgeInsets.only(right: 16.0),
-                child: Container(
-                  padding: EdgeInsets.all(2.r),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).primaryColor.withValues(alpha: .2),
-                      width: 1,
-                    ),
+                child: CustomShimmer.circular(width: 44.r, height: 44.r),
+              );
+            }
+
+            final user = state is ProfileSuccess ? state.user : _dummyUser;
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Container(
+                padding: EdgeInsets.all(2.r),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor.withValues(alpha: .2),
+                    width: 1,
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: user.avatar,
-                    imageBuilder: (context, imageProvider) => CircleAvatar(
-                      radius: 20.r,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      backgroundImage: imageProvider,
-                    ),
-                    placeholder: (context, url) => CircleAvatar(
-                      radius: 20.r,
-                      backgroundColor: AppColors.grey4.withValues(alpha: .1),
-                    ),
-                    errorWidget: (context, url, error) => CircleAvatar(
-                      radius: 20.r,
-                      backgroundColor: AppColors.grey4.withValues(alpha: .1),
-                      child: const Icon(Icons.person),
-                    ),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: user.avatar,
+                  imageBuilder: (context, imageProvider) => CircleAvatar(
+                    radius: 20.r,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundImage: imageProvider,
+                  ),
+                  placeholder: (context, url) => CircleAvatar(
+                    radius: 20.r,
+                    backgroundColor: AppColors.grey4.withValues(alpha: .1),
+                  ),
+                  errorWidget: (context, url, error) => CircleAvatar(
+                    radius: 20.r,
+                    backgroundColor: AppColors.grey4.withValues(alpha: .1),
+                    child: const Icon(Icons.person),
                   ),
                 ),
               ),
