@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stylish/Core/utils/app_colors.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
 import 'package:stylish/Features/home/data/models/category_model.dart';
 
@@ -11,24 +13,59 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Circular Image
+          // Circular Image with Border
           Container(
-            width: 70.w,
-            height: 70.h,
+            padding: EdgeInsets.all(2.r),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              image: DecorationImage(
-                image: AssetImage(category.imageUrl),
-                fit: BoxFit.cover,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: .2),
+                width: 1,
+              ),
+            ),
+            child: CachedNetworkImage(
+              imageUrl: category.image,
+              imageBuilder: (context, imageProvider) => Container(
+                width: 60.w,
+                height: 60.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => Container(
+                width: 60.w,
+                height: 60.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.grey4.withValues(alpha: .1),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                width: 60.w,
+                height: 60.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.grey4.withValues(alpha: .1),
+                ),
+                child: const Icon(Icons.error_outline),
               ),
             ),
           ),
           SizedBox(height: 8.h),
-          Text(category.name, style: AppTextStyles.regular10),
+          Text(
+            category.name,
+            style: AppTextStyles.regular10.copyWith(
+              color: AppColors.onBackground,
+            ),
+          ),
         ],
       ),
     );

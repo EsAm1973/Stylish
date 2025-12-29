@@ -3,20 +3,25 @@ import 'package:dio/dio.dart';
 import 'package:stylish/Core/errors/failure.dart';
 import 'package:stylish/Core/services/api_service.dart';
 import 'package:stylish/Core/utils/app_endpoints.dart';
-import 'package:stylish/Features/home/data/models/user_model.dart';
-import 'package:stylish/Features/home/data/repos/profile_repo.dart';
+import 'package:stylish/Features/home/data/models/category_model.dart';
+import 'package:stylish/Features/home/data/repos/home_repo.dart';
 
-class ProfileRepoImpl implements ProfileRepo {
+class HomeRepoImpl implements HomeRepo {
   final ApiService _apiService;
 
-  ProfileRepoImpl(this._apiService);
+  HomeRepoImpl(this._apiService);
 
   @override
-  Future<Either<Failure, UserModel>> fetchUserProfile() async {
+  Future<Either<Failure, List<CategoryModel>>> fetchCategories() async {
     try {
-      final response = await _apiService.get(AppEndpoints.profile);
+      final response = await _apiService.get(AppEndpoints.categories);
 
-      return Right(UserModel.fromJson(response));
+      List<CategoryModel> categories = [];
+      for (var item in response) {
+        categories.add(CategoryModel.fromJson(item));
+      }
+
+      return Right(categories);
     } on DioException catch (e) {
       return Left(ServerFailure.fromDioException(e));
     } catch (e) {

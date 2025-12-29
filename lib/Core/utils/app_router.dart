@@ -12,6 +12,7 @@ import 'package:stylish/Features/auth/presentation/views/signup_view.dart';
 import 'package:stylish/Features/splash/presentation/views/splash_view.dart';
 import 'package:stylish/Features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
+import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
 
 abstract class AppRouter {
   static const String kSplashRoute = '/';
@@ -52,8 +53,11 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kHomeRoute,
-        builder: (context, state) => BlocProvider(
-          create: (context) => getit<ProfileCubit>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => getit<ProfileCubit>()),
+            BlocProvider(create: (context) => getit<CategoriesCubit>()),
+          ],
           child: const HomeView(),
         ),
       ),

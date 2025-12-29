@@ -49,6 +49,7 @@ dependencies:
   flutter_secure_storage:
   fresh_dio: ^0.4.4
   cached_network_image: ^3.4.1
+  skeletonizer: ^2.1.2
 
 dev_dependencies:
   flutter_test:

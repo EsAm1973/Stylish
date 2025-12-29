@@ -1,3 +1,6 @@
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:stylish/Core/utils/app_colors.dart';
+import 'package:stylish/Features/home/data/models/user_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,43 +61,53 @@ class CustomSliverAppBar extends StatelessWidget {
       actions: [
         BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
-            if (state is ProfileLoading) {
-              return const Padding(
-                padding: EdgeInsets.only(right: 16.0),
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is ProfileSuccess) {
-              return Padding(
+            final isSuccess = state is ProfileSuccess;
+            final user = isSuccess ? state.user : _dummyUser;
+
+            return Skeletonizer(
+              enabled: state is ProfileLoading,
+              child: Padding(
                 padding: const EdgeInsets.only(right: 16.0),
-                child: CachedNetworkImage(
-                  imageUrl: state.user.avatar,
-                  imageBuilder: (context, imageProvider) => CircleAvatar(
-                    radius: 22.r,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    backgroundImage: imageProvider,
-                  ),
-                  placeholder: (context, url) => CircleAvatar(
-                    radius: 22.r,
-                    backgroundColor: Colors.transparent,
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0.r),
-                      child: const CircularProgressIndicator(),
+                child: Container(
+                  padding: EdgeInsets.all(2.r),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: .2),
+                      width: 1,
                     ),
                   ),
-                  errorWidget: (context, url, error) => CircleAvatar(
-                    radius: 22.r,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: const Icon(Icons.person),
+                  child: CachedNetworkImage(
+                    imageUrl: user.avatar,
+                    imageBuilder: (context, imageProvider) => CircleAvatar(
+                      radius: 20.r,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundImage: imageProvider,
+                    ),
+                    placeholder: (context, url) => CircleAvatar(
+                      radius: 20.r,
+                      backgroundColor: AppColors.grey4.withValues(alpha: .1),
+                    ),
+                    errorWidget: (context, url, error) => CircleAvatar(
+                      radius: 20.r,
+                      backgroundColor: AppColors.grey4.withValues(alpha: .1),
+                      child: const Icon(Icons.person),
+                    ),
                   ),
                 ),
-              );
-            } else if (state is ProfileFailure) {
-              return const Center(child: Icon(Icons.error));
-            }
-            return const SizedBox.shrink();
+              ),
+            );
           },
         ),
       ],
     );
   }
+
+  static final UserModel _dummyUser = UserModel(
+    id: '1',
+    name: 'User',
+    avatar: 'https://placehold.co/100x100',
+  );
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish/Core/widgets/custom_sliver_appbar.dart';
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
+import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/category_listview.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_listview.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_of_theday.dart';
@@ -23,27 +24,28 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   void initState() {
     super.initState();
     context.read<ProfileCubit>().fetchUserProfile();
+    context.read<CategoriesCubit>().fetchCategories();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
+    return const CustomScrollView(
       slivers: [
-        const CustomSliverAppBar(),
-        const SliverToBoxAdapter(child: SearchTextField()),
-        const SliverToBoxAdapter(child: FeaturedHeader()),
+        CustomSliverAppBar(),
+        SliverToBoxAdapter(child: SearchTextField()),
+        SliverToBoxAdapter(child: FeaturedHeader()),
         SliverToBoxAdapter(child: CategoryListView()),
-        const SliverToBoxAdapter(child: DiscountCarousel()),
-        const SliverToBoxAdapter(child: SizedBox(height: 16.0)),
-        const SliverToBoxAdapter(child: DealOfTheDayBanner()),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(child: DiscountCarousel()),
+        SliverToBoxAdapter(child: SizedBox(height: 16.0)),
+        SliverToBoxAdapter(child: DealOfTheDayBanner()),
+        SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: DealListView(),
           ),
         ),
-        const SliverToBoxAdapter(child: TrendingProductsBanner()),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(child: TrendingProductsBanner()),
+        SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: TrendingProductsList(),
