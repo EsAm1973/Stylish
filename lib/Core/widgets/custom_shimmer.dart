@@ -23,14 +23,14 @@ class CustomShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: Theme.of(context).colorScheme.surface,
+      highlightColor: Theme.of(context).colorScheme.surface,
       period: const Duration(milliseconds: 1500),
       child: Container(
         width: width,
         height: height,
         decoration: ShapeDecoration(
-          color: Colors.grey[400]!,
+          color: Theme.of(context).colorScheme.surface,
           shape: shapeBorder,
         ),
       ),
