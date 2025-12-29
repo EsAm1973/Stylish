@@ -60,12 +60,7 @@ class CategoryItem extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          Text(
-            category.name,
-            style: AppTextStyles.regular10.copyWith(
-              color: AppColors.onBackground,
-            ),
-          ),
+          Text(category.name, style: AppTextStyles.regular10),
         ],
       ),
     );

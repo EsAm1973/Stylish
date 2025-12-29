@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
@@ -21,14 +22,34 @@ class TrendingProductItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12.0.r)),
-            child: Image.asset(
-              product.imageUrl,
-              height: 130.h,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: product.imageUrl.isEmpty
+                ? Container(
+                    height: 130.h,
+                    width: double.infinity,
+                    color: Colors.grey.shade200,
+                    child: Icon(Icons.image, size: 50.r, color: Colors.grey),
+                  )
+                : product.imageUrl.startsWith('http')
+                ? CachedNetworkImage(
+                    imageUrl: product.imageUrl,
+                    height: 130.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      height: 130.h,
+                      color: Colors.grey.shade200,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.image, size: 50.r, color: Colors.grey),
+                  )
+                : Image.asset(
+                    product.imageUrl,
+                    height: 130.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
-
           Padding(
             padding: EdgeInsets.all(12.0.r),
             child: Column(
@@ -54,24 +75,27 @@ class TrendingProductItem extends StatelessWidget {
                 Wrap(
                   children: [
                     Text('₹${product.price}', style: AppTextStyles.semiBold12),
-                    const SizedBox(width: 8),
-                    Text(
-                      '₹${product.originalPrice}',
-                      style: AppTextStyles.regular10.copyWith(
-                        decoration: TextDecoration.lineThrough,
-                        color: Colors.grey,
+                    if (product.originalPrice != null) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        '₹${product.originalPrice}',
+                        style: AppTextStyles.regular10.copyWith(
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      product.discount,
-                      style: AppTextStyles.regular10.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                    ],
+                    if (product.discount != null) ...[
+                      SizedBox(width: 8.w),
+                      Text(
+                        product.discount!,
+                        style: AppTextStyles.regular10.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
-                // Rating Row
               ],
             ),
           ),

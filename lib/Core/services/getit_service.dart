@@ -12,6 +12,7 @@ import 'package:stylish/Core/repos/profile/profile_repo.dart';
 import 'package:stylish/Core/repos/profile/profile_repo_impl.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
 import 'package:stylish/Features/home/data/repos/home_repo_impl.dart';
+import 'package:stylish/Features/home/presentation/manager/products_cubit/products_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
 
@@ -81,4 +82,5 @@ void setupGetIt() {
   getit.registerFactory<CategoriesCubit>(
     () => CategoriesCubit(getit<HomeRepo>()),
   );
+  getit.registerFactory<ProductsCubit>(() => ProductsCubit(getit<HomeRepo>()));
 }

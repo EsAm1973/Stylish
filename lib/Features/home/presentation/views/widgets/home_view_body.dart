@@ -12,6 +12,10 @@ import 'package:stylish/Features/home/presentation/views/widgets/search_text_fei
 import 'package:stylish/Features/home/presentation/views/widgets/trending_products_list.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trinding_products.dart';
 
+import 'package:stylish/Features/home/presentation/manager/products_cubit/products_cubit.dart';
+
+// ... (rest of imports)
+
 class HomeViewBody extends StatefulWidget {
   const HomeViewBody({super.key});
 
@@ -25,6 +29,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
     super.initState();
     context.read<ProfileCubit>().fetchUserProfile();
     context.read<CategoriesCubit>().fetchCategories();
+    context.read<ProductsCubit>().fetchProducts(isFirstTime: true);
   }
 
   @override

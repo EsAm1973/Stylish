@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:stylish/Features/home/presentation/manager/products_cubit/products_cubit.dart';
+import 'package:stylish/Features/home/presentation/manager/products_cubit/products_state.dart';
+import 'package:stylish/Features/home/data/models/product_model.dart';
+import 'package:stylish/Features/home/data/models/category_model.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trending_products_item.dart';
-import 'package:stylish/constants.dart';
 
 class TrendingProductsList extends StatefulWidget {
   const TrendingProductsList({super.key});
@@ -13,11 +18,10 @@ class TrendingProductsList extends StatefulWidget {
 class _TrendingProductsListState extends State<TrendingProductsList> {
   final ScrollController _scrollController = ScrollController();
 
-  // Helper method to calculate item width based on screen size
   double get _getItemWidth => (MediaQuery.of(context).size.width - 20.w) / 2;
 
   void _scrollForward() {
-    // Scroll by the width of exactly one item
+    if (!_scrollController.hasClients) return;
     double targetOffset = _scrollController.offset + _getItemWidth;
     if (targetOffset > _scrollController.position.maxScrollExtent) {
       targetOffset = _scrollController.position.maxScrollExtent;
@@ -32,56 +36,83 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate width once to use in the builder and the sizing
     final double itemWidth = _getItemWidth;
 
-    return SizedBox(
-      height: 240.h,
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          ListView.builder(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              return SizedBox(
-                width: itemWidth,
-                child: TrendingProductItem(product: products[index]),
-              );
-            },
-          ),
+    return BlocBuilder<ProductsCubit, ProductsState>(
+      builder: (context, state) {
+        if (state is ProductsSuccess || state is ProductsLoading) {
+          final List<ProductModel> displayProducts = state is ProductsSuccess
+              ? state.products
+              : List.generate(
+                  4,
+                  (index) => ProductModel(
+                    id: index,
+                    title: 'Loading...',
+                    price: 0,
+                    description: 'Loading...',
+                    images: [],
+                    category: CategoryModel(id: 0, name: '', image: ''),
+                  ),
+                );
 
-          // Navigation Arrow (Floating)
-          Positioned(
-            right: 8.w,
-            child: GestureDetector(
-              onTap: _scrollForward,
-              child: Container(
-                width: 40.w,
-                height: 40.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey.shade200.withOpacity(0.9),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: .1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+          return Skeletonizer(
+            enabled: state is ProductsLoading,
+            child: SizedBox(
+              height: 240.h,
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  ListView.builder(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: displayProducts.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: itemWidth,
+                        child: TrendingProductItem(
+                          product: displayProducts[index],
+                        ),
+                      );
+                    },
+                  ),
+                  if (state is ProductsSuccess && displayProducts.isNotEmpty)
+                    Positioned(
+                      right: 8.w,
+                      child: GestureDetector(
+                        onTap: _scrollForward,
+                        child: Container(
+                          width: 40.w,
+                          height: 40.w,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade200.withOpacity(0.9),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: .1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16.sp,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16.sp,
-                  color: Colors.black87,
-                ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
+          );
+        } else if (state is ProductsFailure) {
+          return Center(child: Text(state.failure.errorMessage));
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }
