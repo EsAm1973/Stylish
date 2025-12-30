@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stylish/Core/widgets/custom_sliver_appbar.dart';
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
@@ -11,10 +12,7 @@ import 'package:stylish/Features/home/presentation/views/widgets/feature_header.
 import 'package:stylish/Features/home/presentation/views/widgets/search_text_feild.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trending_products_list.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trinding_products.dart';
-
 import 'package:stylish/Features/home/presentation/manager/products_cubit/products_cubit.dart';
-
-// ... (rest of imports)
 
 class HomeViewBody extends StatefulWidget {
   const HomeViewBody({super.key});
@@ -41,19 +39,19 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         const SliverToBoxAdapter(child: FeaturedHeader()),
         const SliverToBoxAdapter(child: CategoryListView()),
         const SliverToBoxAdapter(child: DiscountCarousel()),
-        const SliverToBoxAdapter(child: SizedBox(height: 16.0)),
+        SliverToBoxAdapter(child: SizedBox(height: 16.0.h)),
         const SliverToBoxAdapter(child: DealOfTheDayBanner()),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: DealListView(),
+            padding: EdgeInsets.symmetric(vertical: 16.0.h),
+            child: const DealListView(),
           ),
         ),
         const SliverToBoxAdapter(child: TrendingProductsBanner()),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: TrendingProductsList(),
+            padding: EdgeInsets.symmetric(vertical: 16.0.h),
+            child: const TrendingProductsList(),
           ),
         ),
       ],

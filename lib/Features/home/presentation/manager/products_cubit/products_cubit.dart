@@ -5,7 +5,7 @@ import 'package:stylish/Features/home/presentation/manager/products_cubit/produc
 class ProductsCubit extends Cubit<ProductsState> {
   final HomeRepo _homeRepo;
   int _offset = 0;
-  final int _limit = 10;
+  final int _limit = 5;
   bool _isFetching = false;
 
   ProductsCubit(this._homeRepo) : super(ProductsInitial());

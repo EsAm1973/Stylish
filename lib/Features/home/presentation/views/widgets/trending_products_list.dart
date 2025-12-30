@@ -65,7 +65,7 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
                   controller: _scrollController,
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  itemCount: products.length,
+                  itemCount: products.length > 5 ? 5 : products.length,
                   itemBuilder: (context, index) {
                     return SizedBox(
                       width: itemWidth,
