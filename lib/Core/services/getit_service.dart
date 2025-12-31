@@ -12,6 +12,8 @@ import 'package:stylish/Core/repos/profile/profile_repo.dart';
 import 'package:stylish/Core/repos/profile/profile_repo_impl.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
 import 'package:stylish/Features/home/data/repos/home_repo_impl.dart';
+import 'package:stylish/Features/categories/data/repos/categories_repo.dart';
+import 'package:stylish/Features/categories/data/repos/categories_repo_impl.dart';
 
 final getit = GetIt.instance;
 
@@ -73,5 +75,8 @@ void setupGetIt() {
   );
   getit.registerLazySingleton<HomeRepo>(
     () => HomeRepoImpl(getit<ApiService>()),
+  );
+  getit.registerLazySingleton<CategoriesRepo>(
+    () => CategoriesRepoImpl(getit<ApiService>()),
   );
 }

@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish/Core/repos/profile/profile_repo.dart';
+import 'package:stylish/Features/categories/data/repos/categories_repo.dart';
+import 'package:stylish/Features/categories/presentation/manager/category_products_cubit/category_products_cubit.dart';
 import 'package:stylish/Features/categories/presentation/views/category_view.dart';
 import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
@@ -84,8 +86,8 @@ abstract class AppRouter {
             ),
             BlocProvider(
               create: (context) =>
-                  ProductsCubit(getit<HomeRepo>())
-                    ..fetchProducts(isFirstTime: true),
+                  CategoryProductsCubit(getit<CategoriesRepo>())
+                    ..fetchCategoryProducts(categoryId: state.extra as int),
             ),
           ],
           child: const CategoryView(),

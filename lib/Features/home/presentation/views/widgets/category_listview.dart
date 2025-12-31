@@ -50,7 +50,8 @@ class CategoryListView extends StatelessWidget {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              GoRouter.of(context).push(AppRouter.kCategoryRoute);
+              GoRouter.of(context).push(AppRouter.kCategoryRoute,
+                  extra: categories[index].id);
             },
             child: CategoryItem(category: categories[index]),
           );
