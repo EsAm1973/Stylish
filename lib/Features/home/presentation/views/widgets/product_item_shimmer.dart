@@ -3,12 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stylish/Core/widgets/custom_shimmer.dart';
 
 class ProductItemShimmer extends StatelessWidget {
-  const ProductItemShimmer({super.key});
+  final double? height;
+  final EdgeInsetsGeometry? margin;
+
+  const ProductItemShimmer({super.key, this.height, this.margin});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(right: 16.0.w, bottom: 8.0.h),
+      margin: margin ?? EdgeInsets.only(right: 16.0.w, bottom: 8.0.h),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0.r),
@@ -17,7 +20,7 @@ class ProductItemShimmer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomShimmer.rectangular(
-            height: 130.h,
+            height: height ?? 130.h,
             shapeBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12.0.r)),
             ),

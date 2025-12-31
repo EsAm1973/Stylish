@@ -77,8 +77,17 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kCategoryRoute,
-        builder: (context, state) => BlocProvider(
-          create: (context) => ProfileCubit(getit<ProfileRepo>()),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => ProfileCubit(getit<ProfileRepo>()),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  ProductsCubit(getit<HomeRepo>())
+                    ..fetchProducts(isFirstTime: true),
+            ),
+          ],
           child: const CategoryView(),
         ),
       ),

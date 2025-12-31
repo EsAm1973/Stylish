@@ -6,13 +6,20 @@ import 'package:stylish/Features/home/data/models/product_model.dart';
 
 class ProductItem extends StatelessWidget {
   final ProductModel product;
+  final double? imageHeight;
+  final EdgeInsetsGeometry? margin;
 
-  const ProductItem({super.key, required this.product});
+  const ProductItem({
+    super.key,
+    required this.product,
+    this.imageHeight,
+    this.margin,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(right: 16.0.w, bottom: 8.0.h),
+      margin: margin ?? EdgeInsets.only(right: 16.0.w, bottom: 8.0.h),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0.r),
@@ -24,7 +31,7 @@ class ProductItem extends StatelessWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(12.0.r)),
             child: product.imageUrl.isEmpty
                 ? Container(
-                    height: 130.h,
+                    height: imageHeight ?? 130.h,
                     width: double.infinity,
                     color: Colors.grey.shade200,
                     child: Icon(Icons.image, size: 50.r, color: Colors.grey),
@@ -32,11 +39,11 @@ class ProductItem extends StatelessWidget {
                 : product.imageUrl.startsWith('http')
                 ? CachedNetworkImage(
                     imageUrl: product.imageUrl,
-                    height: 130.h,
+                    height: imageHeight ?? 130.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      height: 130.h,
+                      height: imageHeight ?? 130.h,
                       color: Colors.grey.shade200,
                       child: const Center(child: CircularProgressIndicator()),
                     ),
@@ -45,7 +52,7 @@ class ProductItem extends StatelessWidget {
                   )
                 : Image.asset(
                     product.imageUrl,
-                    height: 130.h,
+                    height: imageHeight ?? 130.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
