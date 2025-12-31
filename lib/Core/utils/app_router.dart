@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stylish/Core/repos/profile/profile_repo.dart';
+import 'package:stylish/Features/categories/presentation/views/category_view.dart';
 import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
+import 'package:stylish/Features/home/data/repos/home_repo.dart';
 import 'package:stylish/Features/home/presentation/views/home_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Core/services/getit_service.dart';
@@ -23,6 +26,7 @@ abstract class AppRouter {
   static const String kSignupRoute = '/signup';
   static const String kForgetPasswordRoute = '/forgetPassword';
   static const String kGetStartedRoute = '/getStarted';
+  static const String kCategoryRoute = '/category';
 
   static final router = GoRouter(
     routes: [
@@ -56,9 +60,13 @@ abstract class AppRouter {
         path: kHomeRoute,
         builder: (context, state) => MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => getit<ProfileCubit>()),
-            BlocProvider(create: (context) => getit<CategoriesCubit>()),
-            BlocProvider(create: (context) => getit<ProductsCubit>()),
+            BlocProvider(
+              create: (context) => ProfileCubit(getit<ProfileRepo>()),
+            ),
+            BlocProvider(
+              create: (context) => CategoriesCubit(getit<HomeRepo>()),
+            ),
+            BlocProvider(create: (context) => ProductsCubit(getit<HomeRepo>())),
           ],
           child: const HomeView(),
         ),
@@ -66,6 +74,13 @@ abstract class AppRouter {
       GoRoute(
         path: kGetStartedRoute,
         builder: (context, state) => const GetStartedView(),
+      ),
+      GoRoute(
+        path: kCategoryRoute,
+        builder: (context, state) => BlocProvider(
+          create: (context) => ProfileCubit(getit<ProfileRepo>()),
+          child: const CategoryView(),
+        ),
       ),
     ],
   );

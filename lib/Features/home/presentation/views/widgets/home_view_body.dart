@@ -34,7 +34,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        const CustomSliverAppBar(),
+        const CustomSliverAppBar(isHome: true),
         const SliverToBoxAdapter(child: SearchTextField()),
         const SliverToBoxAdapter(child: FeaturedHeader()),
         const SliverToBoxAdapter(child: CategoryListView()),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/categories_cubit/categories_state.dart';
 import 'package:stylish/Features/home/data/models/category_model.dart';
@@ -46,7 +48,12 @@ class CategoryListView extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 8.w),
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          return CategoryItem(category: categories[index]);
+          return GestureDetector(
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kCategoryRoute);
+            },
+            child: CategoryItem(category: categories[index]),
+          );
         },
       ),
     );

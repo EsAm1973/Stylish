@@ -11,8 +11,8 @@ import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_state.dart';
 
 class CustomSliverAppBar extends StatelessWidget {
-  const CustomSliverAppBar({super.key});
-
+  const CustomSliverAppBar({super.key, required this.isHome});
+  final bool isHome;
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -21,28 +21,32 @@ class CustomSliverAppBar extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       centerTitle: true,
-      leading: Builder(
-        builder: (context) => Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Center(
-            child: GestureDetector(
-              onTap: () => Scaffold.of(context).openDrawer(),
-              child: Container(
-                height: 40.h,
-                width: 40.w,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: .1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.sort,
-                  color: Theme.of(context).iconTheme.color,
+      leading: isHome
+          ? Builder(
+              builder: (context) => Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => Scaffold.of(context).openDrawer(),
+                    child: Container(
+                      height: 40.h,
+                      width: 40.w,
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: .1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.sort,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
+            )
+          : null,
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
