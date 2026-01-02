@@ -16,7 +16,16 @@ class TrendingProductsList extends StatefulWidget {
 class _TrendingProductsListState extends State<TrendingProductsList> {
   final ScrollController _scrollController = ScrollController();
 
-  double get _getItemWidth => (MediaQuery.of(context).size.width - 20.w) / 2;
+  double get _getItemWidth {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth >= 1200) {
+      return (screenWidth - 32.w) / 4.5;
+    } else if (screenWidth >= 600) {
+      return (screenWidth - 32.w) / 3.5;
+    } else {
+      return (screenWidth - 32.w) / 2.2;
+    }
+  }
 
   void _scrollForward() {
     if (!_scrollController.hasClients) return;
@@ -40,7 +49,7 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
       builder: (context, state) {
         if (state is ProductsLoading) {
           return SizedBox(
-            height: 240.h,
+            height: 250.h,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -57,7 +66,7 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
           final products = state.products;
 
           return SizedBox(
-            height: 240.h,
+            height: 250.h,
             child: Stack(
               alignment: Alignment.centerRight,
               children: [

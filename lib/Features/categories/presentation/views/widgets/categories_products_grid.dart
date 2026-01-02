@@ -13,7 +13,11 @@ class CategoriesProductsGrid extends StatelessWidget {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       sliver: SliverMasonryGrid.count(
-        crossAxisCount: 2,
+        crossAxisCount: MediaQuery.of(context).size.width > 900
+            ? 4
+            : MediaQuery.of(context).size.width > 600
+            ? 3
+            : 2,
         mainAxisSpacing: 12.h,
         crossAxisSpacing: 12.w,
         itemBuilder: (context, index) {

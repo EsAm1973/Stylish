@@ -41,19 +41,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         const SliverToBoxAdapter(child: DiscountCarousel()),
         SliverToBoxAdapter(child: SizedBox(height: 16.0.h)),
         const SliverToBoxAdapter(child: DealOfTheDayBanner()),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0.h),
-            child: const DealListView(),
-          ),
-        ),
+        SliverToBoxAdapter(child: SizedBox(height: 16.0.h)),
+        const SliverToBoxAdapter(child: DealListView()),
         const SliverToBoxAdapter(child: TrendingProductsBanner()),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0.h),
-            child: const TrendingProductsList(),
-          ),
-        ),
+        SliverToBoxAdapter(child: SizedBox(height: 16.0.h)),
+        const SliverToBoxAdapter(child: TrendingProductsList()),
       ],
     );
   }

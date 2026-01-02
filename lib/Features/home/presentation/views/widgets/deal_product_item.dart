@@ -26,39 +26,19 @@ class ProductItem extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12.0.r)),
-            child: product.imageUrl.isEmpty
-                ? Container(
-                    height: imageHeight ?? 130.h,
-                    width: double.infinity,
-                    color: Colors.grey.shade200,
-                    child: Icon(Icons.image, size: 50.r, color: Colors.grey),
-                  )
-                : product.imageUrl.startsWith('http')
-                ? CachedNetworkImage(
-                    imageUrl: product.imageUrl,
-                    height: imageHeight ?? 130.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      height: imageHeight ?? 130.h,
-                      color: Colors.grey.shade200,
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, url, error) =>
-                        Icon(Icons.image, size: 50.r, color: Colors.grey),
-                  )
-                : Image.asset(
-                    product.imageUrl,
-                    height: imageHeight ?? 130.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+            child: imageHeight != null
+                ? _buildImage(imageHeight!)
+                : AspectRatio(
+                    aspectRatio: 1.3,
+                    child: _buildImage(double.infinity),
                   ),
           ),
           Padding(
-            padding: EdgeInsets.all(12.0.r),
+            padding: EdgeInsets.all(8.0.r),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -69,7 +49,7 @@ class ProductItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.semiBold12,
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 2.h),
                 // Description
                 Text(
                   product.description,
@@ -77,13 +57,15 @@ class ProductItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.regular10,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 6.h),
                 // Price Row
                 Wrap(
+                  spacing: 4.w,
+                  runSpacing: 2.h,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text('₹${product.price}', style: AppTextStyles.semiBold12),
-                    if (product.originalPrice != null) ...[
-                      const SizedBox(width: 8),
+                    if (product.originalPrice != null)
                       Text(
                         '₹${product.originalPrice}',
                         style: AppTextStyles.regular10.copyWith(
@@ -91,19 +73,16 @@ class ProductItem extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                    ],
-                    if (product.discount != null) ...[
-                      SizedBox(width: 8.w),
+                    if (product.discount != null)
                       Text(
                         product.discount!,
                         style: AppTextStyles.regular10.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                    ],
                   ],
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 6.h),
                 // Rating Row
                 if (product.rating != null)
                   Row(
@@ -114,19 +93,19 @@ class ProductItem extends StatelessWidget {
                           return Icon(
                             Icons.star,
                             color: Colors.amber,
-                            size: 16.r,
+                            size: 14.r,
                           );
                         } else if (index + 0.5 == product.rating) {
                           return Icon(
                             Icons.star_half,
                             color: Colors.amber,
-                            size: 16.r,
+                            size: 14.r,
                           );
                         } else {
                           return Icon(
                             Icons.star_border,
                             color: Colors.amber,
-                            size: 16.r,
+                            size: 14.r,
                           );
                         }
                       }),
@@ -145,6 +124,37 @@ class ProductItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImage(double height) {
+    if (product.imageUrl.isEmpty) {
+      return Container(
+        height: height == double.infinity ? null : height,
+        width: double.infinity,
+        color: Colors.grey.shade200,
+        child: Icon(Icons.image, size: 40.r, color: Colors.grey),
+      );
+    }
+    if (product.imageUrl.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: product.imageUrl,
+        height: height == double.infinity ? null : height,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: Colors.grey.shade200,
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+        errorWidget: (context, url, error) =>
+            Icon(Icons.image, size: 40.r, color: Colors.grey),
+      );
+    }
+    return Image.asset(
+      product.imageUrl,
+      height: height == double.infinity ? null : height,
+      width: double.infinity,
+      fit: BoxFit.cover,
     );
   }
 }

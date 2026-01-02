@@ -18,20 +18,26 @@ class ProductItemShimmer extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CustomShimmer.rectangular(
-            height: height ?? 130.h,
-            shapeBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12.0.r)),
+          AspectRatio(
+            aspectRatio: 1.3,
+            child: CustomShimmer.rectangular(
+              height: double.infinity,
+              shapeBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(12.0.r),
+                ),
+              ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(12.0.r),
+            padding: EdgeInsets.all(8.0.r),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomShimmer.rectangular(height: 12.h, width: 100.w),
-                SizedBox(height: 8.h),
+                SizedBox(height: 4.h),
                 CustomShimmer.rectangular(height: 10.h, width: 150.w),
                 SizedBox(height: 4.h),
                 CustomShimmer.rectangular(height: 10.h, width: 130.w),
