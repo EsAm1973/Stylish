@@ -49,7 +49,7 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
       builder: (context, state) {
         if (state is ProductsLoading) {
           return SizedBox(
-            height: 250.h,
+            height: 220.h,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -66,7 +66,7 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
           final products = state.products;
 
           return SizedBox(
-            height: 250.h,
+            height: 220.h,
             child: Stack(
               alignment: Alignment.centerRight,
               children: [
