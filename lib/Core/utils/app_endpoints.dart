@@ -3,5 +3,5 @@ abstract class AppEndpoints {
   static const String login = 'auth/login/';
   static const String profile = 'auth/profile';
   static const String categories = 'categories';
-  static const String graphql = 'https://api.escuelajs.co/graphql';
+  static const String products = 'products';
 }

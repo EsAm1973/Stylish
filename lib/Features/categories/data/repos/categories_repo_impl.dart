@@ -16,32 +16,14 @@ class CategoriesRepoImpl implements CategoriesRepo {
     required int categoryId,
   }) async {
     try {
-      final String query =
-          '''
-query {
-  products(categoryId: $categoryId) {
-    id
-    title
-    price
-    description
-    images
-    category {
-      id
-      name
-      image
-    }
-  }
-}
-''';
-      final response = await _apiService.post(AppEndpoints.graphql, {
-        'query': query,
-      });
+      final response = await _apiService.get(
+        AppEndpoints.products,
+        queryParameters: {'categoryId': categoryId},
+      );
 
       List<ProductModel> products = [];
-      if (response['data'] != null && response['data']['products'] != null) {
-        for (var item in response['data']['products']) {
-          products.add(ProductModel.fromJson(item));
-        }
+      for (var item in response) {
+        products.add(ProductModel.fromJson(item));
       }
 
       return Right(products);
