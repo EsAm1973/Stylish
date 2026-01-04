@@ -5,5 +5,7 @@ import 'package:stylish/Features/home/data/models/product_model.dart';
 abstract class CategoriesRepo {
   Future<Either<Failure, List<ProductModel>>> fetchCategoryProducts({
     required int categoryId,
+    int limit = 10,
+    int offset = 0,
   });
 }

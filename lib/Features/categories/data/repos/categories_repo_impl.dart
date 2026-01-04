@@ -14,11 +14,17 @@ class CategoriesRepoImpl implements CategoriesRepo {
   @override
   Future<Either<Failure, List<ProductModel>>> fetchCategoryProducts({
     required int categoryId,
+    int limit = 10,
+    int offset = 0,
   }) async {
     try {
       final response = await _apiService.get(
         AppEndpoints.products,
-        queryParameters: {'categoryId': categoryId},
+        queryParameters: {
+          'categoryId': categoryId,
+          'limit': limit,
+          'offset': offset,
+        },
       );
 
       List<ProductModel> products = [];

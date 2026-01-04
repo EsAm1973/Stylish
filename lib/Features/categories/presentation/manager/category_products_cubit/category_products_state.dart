@@ -17,3 +17,16 @@ class CategoryProductsFailure extends CategoryProductsState {
 
   CategoryProductsFailure(this.errorMessage);
 }
+
+class CategoryProductsPaginationLoading extends CategoryProductsState {
+  final List<ProductModel> products;
+
+  CategoryProductsPaginationLoading(this.products);
+}
+
+class CategoryProductsPaginationFailure extends CategoryProductsState {
+  final List<ProductModel> products;
+  final String errorMessage;
+
+  CategoryProductsPaginationFailure(this.products, this.errorMessage);
+}
