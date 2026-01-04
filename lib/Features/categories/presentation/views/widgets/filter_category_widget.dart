@@ -31,13 +31,6 @@ class FilterCategoryWidget extends StatelessWidget {
               ),
               const Spacer(),
               _buildActionButton(
-                label: 'Sort',
-                icon: Icons.swap_vert,
-                onTap: () {},
-                context: context,
-              ),
-              SizedBox(width: 8.w),
-              _buildActionButton(
                 label: 'Filter',
                 icon: Icons.filter_alt_outlined,
                 onTap: () => _showFilterBottomSheet(context),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Features/home/data/models/product_model.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/deal_product_item.dart';
 
@@ -25,10 +27,15 @@ class CategoriesProductsGrid extends StatelessWidget {
           // or let it be determined by content if imageHeight is null.
           // Based on the provided image, we can vary heights slightly.
           final isEven = index % 2 == 0;
-          return ProductItem(
-            product: products[index],
-            imageHeight: isEven ? 180.h : 220.h, // Vary heights to match design
-            margin: EdgeInsets.zero,
+          return GestureDetector(
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kProductDetailsRoute);
+            },
+            child: ProductItem(
+              product: products[index],
+              imageHeight: isEven ? 180.h : 220.h,
+              margin: EdgeInsets.zero,
+            ),
           );
         },
         childCount: products.length,

@@ -3,6 +3,7 @@ import 'package:stylish/Core/repos/profile/profile_repo.dart';
 import 'package:stylish/Features/categories/data/repos/categories_repo.dart';
 import 'package:stylish/Features/categories/presentation/manager/category_products_cubit/category_products_cubit.dart';
 import 'package:stylish/Features/categories/presentation/views/category_view.dart';
+import 'package:stylish/Features/categories/presentation/views/product_details_view.dart';
 import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
 import 'package:stylish/Features/home/presentation/views/home_view.dart';
@@ -29,6 +30,7 @@ abstract class AppRouter {
   static const String kForgetPasswordRoute = '/forgetPassword';
   static const String kGetStartedRoute = '/getStarted';
   static const String kCategoryRoute = '/category';
+  static const String kProductDetailsRoute = '/productDetails';
 
   static final router = GoRouter(
     routes: [
@@ -92,6 +94,10 @@ abstract class AppRouter {
           ],
           child: const CategoryView(),
         ),
+      ),
+      GoRoute(
+        path: kProductDetailsRoute,
+        builder: (context, state) => const ProductDetailsView(),
       ),
     ],
   );
