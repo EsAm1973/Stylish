@@ -8,5 +8,8 @@ abstract class CategoriesRepo {
     int limit = 10,
     int offset = 0,
     String? title,
+    num? price,
+    num? priceMin,
+    num? priceMax,
   });
 }

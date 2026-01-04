@@ -17,6 +17,9 @@ class CategoriesRepoImpl implements CategoriesRepo {
     int limit = 10,
     int offset = 0,
     String? title,
+    num? price,
+    num? priceMin,
+    num? priceMax,
   }) async {
     try {
       final response = await _apiService.get(
@@ -26,6 +29,9 @@ class CategoriesRepoImpl implements CategoriesRepo {
           'limit': limit,
           'offset': offset,
           if (title != null) 'title': title,
+          if (price != null) 'price': price,
+          if (priceMin != null) 'price_min': priceMin,
+          if (priceMax != null) 'price_max': priceMax,
         },
       );
 

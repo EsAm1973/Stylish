@@ -15,18 +15,25 @@ class CategoryProductsCubit extends Cubit<CategoryProductsState> {
   bool _hasNext = true;
   int? _currentCategoryId;
 
-  // Search related state
+  // Filter related state
   String? _searchTerm;
-  List<ProductModel> _searchProducts = [];
-  int _searchOffset = 0;
-  bool _searchHasNext = true;
+  num? _price;
+  num? _priceMin;
+  num? _priceMax;
+
+  List<ProductModel> _filteredProducts = [];
+  int _filteredOffset = 0;
+  bool _filteredHasNext = true;
 
   Future<void> fetchCategoryProducts({required int categoryId}) async {
     _currentCategoryId = categoryId;
     _products = [];
     _offset = 0;
     _hasNext = true;
-    _searchTerm = null; // Reset search when switching categories
+    _searchTerm = null; // Reset filters when switching categories
+    _price = null;
+    _priceMin = null;
+    _priceMax = null;
     emit(CategoryProductsLoading());
     var result = await _categoriesRepo.fetchCategoryProducts(
       categoryId: categoryId,
@@ -46,39 +53,62 @@ class CategoryProductsCubit extends Cubit<CategoryProductsState> {
     );
   }
 
-  Future<void> searchCategoryProducts(String title) async {
+  Future<void> applyFilters({
+    String? title,
+    num? price,
+    num? priceMin,
+    num? priceMax,
+  }) async {
     if (_currentCategoryId == null) return;
 
-    if (title.isEmpty) {
-      _searchTerm = null;
-      emit(CategoryProductsSuccess(_products));
-      return;
-    }
-
     _searchTerm = title;
-    _searchProducts = [];
-    _searchOffset = 0;
-    _searchHasNext = true;
+    _price = price;
+    _priceMin = priceMin;
+    _priceMax = priceMax;
 
-    emit(
-      CategoryProductsLoading(),
-    ); // Or a separate search loading state if preferred
+    _filteredProducts = [];
+    _filteredOffset = 0;
+    _filteredHasNext = true;
+
+    emit(CategoryProductsLoading());
+
     var result = await _categoriesRepo.fetchCategoryProducts(
       categoryId: _currentCategoryId!,
       limit: _limit,
-      offset: _searchOffset,
-      title: title,
+      offset: _filteredOffset,
+      title: _searchTerm,
+      price: _price,
+      priceMin: _priceMin,
+      priceMax: _priceMax,
     );
 
     result.fold(
       (failure) => emit(CategoryProductsFailure(failure.errorMessage)),
       (products) {
-        _searchProducts = products;
+        _filteredProducts = products;
         if (products.length < _limit) {
-          _searchHasNext = false;
+          _filteredHasNext = false;
         }
-        emit(CategoryProductsSuccess(_searchProducts));
+        emit(CategoryProductsSuccess(_filteredProducts));
       },
+    );
+  }
+
+  Future<void> resetFilters() async {
+    if (_currentCategoryId == null) return;
+    _searchTerm = null;
+    _price = null;
+    _priceMin = null;
+    _priceMax = null;
+    await fetchCategoryProducts(categoryId: _currentCategoryId!);
+  }
+
+  Future<void> searchCategoryProducts(String title) async {
+    await applyFilters(
+      title: title.isEmpty ? null : title,
+      price: _price,
+      priceMin: _priceMin,
+      priceMax: _priceMax,
     );
   }
 
@@ -86,8 +116,11 @@ class CategoryProductsCubit extends Cubit<CategoryProductsState> {
     final targetCategoryId = categoryId ?? _currentCategoryId;
     if (targetCategoryId == null) return;
 
-    if (_searchTerm != null) {
-      await _loadMoreSearchResults(targetCategoryId);
+    if (_searchTerm != null ||
+        _price != null ||
+        _priceMin != null ||
+        _priceMax != null) {
+      await _loadMoreFilteredResults(targetCategoryId);
     } else {
       await _loadMoreMainResults(targetCategoryId);
     }
@@ -127,39 +160,42 @@ class CategoryProductsCubit extends Cubit<CategoryProductsState> {
     );
   }
 
-  Future<void> _loadMoreSearchResults(int categoryId) async {
-    if (state is CategoryProductsPaginationLoading || !_searchHasNext) return;
+  Future<void> _loadMoreFilteredResults(int categoryId) async {
+    if (state is CategoryProductsPaginationLoading || !_filteredHasNext) return;
 
-    _searchOffset += _limit;
-    emit(CategoryProductsPaginationLoading(_searchProducts));
+    _filteredOffset += _limit;
+    emit(CategoryProductsPaginationLoading(_filteredProducts));
 
     var result = await _categoriesRepo.fetchCategoryProducts(
       categoryId: categoryId,
       limit: _limit,
-      offset: _searchOffset,
+      offset: _filteredOffset,
       title: _searchTerm,
+      price: _price,
+      priceMin: _priceMin,
+      priceMax: _priceMax,
     );
 
     result.fold(
       (failure) {
-        _searchOffset -= _limit;
+        _filteredOffset -= _limit;
         emit(
           CategoryProductsPaginationFailure(
-            _searchProducts,
+            _filteredProducts,
             failure.errorMessage,
           ),
         );
       },
       (products) {
         if (products.isEmpty) {
-          _searchHasNext = false;
-          emit(CategoryProductsSuccess(_searchProducts));
+          _filteredHasNext = false;
+          emit(CategoryProductsSuccess(_filteredProducts));
         } else {
-          _searchProducts.addAll(products);
+          _filteredProducts.addAll(products);
           if (products.length < _limit) {
-            _searchHasNext = false;
+            _filteredHasNext = false;
           }
-          emit(CategoryProductsSuccess(_searchProducts));
+          emit(CategoryProductsSuccess(_filteredProducts));
         }
       },
     );
