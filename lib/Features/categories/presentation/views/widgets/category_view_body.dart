@@ -45,7 +45,15 @@ class _CategoryViewBodyState extends State<CategoryViewBody> {
       controller: _scrollController,
       slivers: [
         const CustomSliverAppBar(isHome: false),
-        const SliverToBoxAdapter(child: SearchTextField()),
+        SliverToBoxAdapter(
+          child: SearchTextField(
+            onChanged: (value) {
+              context.read<CategoryProductsCubit>().searchCategoryProducts(
+                value,
+              );
+            },
+          ),
+        ),
         const SliverToBoxAdapter(child: FilterCategoryWidget()),
         BlocConsumer<CategoryProductsCubit, CategoryProductsState>(
           listener: (context, state) {

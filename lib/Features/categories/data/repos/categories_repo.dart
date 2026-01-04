@@ -7,5 +7,6 @@ abstract class CategoriesRepo {
     required int categoryId,
     int limit = 10,
     int offset = 0,
+    String? title,
   });
 }

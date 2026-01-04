@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
 
 class SearchTextField extends StatelessWidget {
-  const SearchTextField({super.key});
+  const SearchTextField({super.key, this.onChanged});
+
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,7 @@ class SearchTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: TextField(
+        onChanged: onChanged,
         decoration: InputDecoration(
           hintText: 'Search any Product..',
           hintStyle: AppTextStyles.regular14,
