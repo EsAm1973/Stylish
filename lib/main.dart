@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stylish/Core/services/bloc_observer.dart';
 import 'package:stylish/Core/services/getit_service.dart';
 import 'package:stylish/Core/services/shared_prefs.dart';
 import 'package:stylish/Core/utils/app_router.dart';
@@ -7,6 +9,7 @@ import 'package:stylish/Core/utils/app_themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = CustomBlocObserver();
   await Prefs.init();
   setupGetIt();
   runApp(const MyApp());
