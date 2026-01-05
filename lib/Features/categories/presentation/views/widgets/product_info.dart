@@ -61,7 +61,7 @@ class _ProductInfoState extends State<ProductInfo> {
               Text(
                 "₹1,500",
                 style: AppTextStyles.bold14.copyWith(
-                  color: AppColors.onSurface,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SizedBox(width: 8.w),
@@ -76,7 +76,9 @@ class _ProductInfoState extends State<ProductInfo> {
           SizedBox(height: 20.h),
           Text(
             "Product Details",
-            style: AppTextStyles.bold14.copyWith(color: AppColors.onBackground),
+            style: AppTextStyles.bold14.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           SizedBox(height: 8.h),
           GestureDetector(
@@ -92,7 +94,7 @@ class _ProductInfoState extends State<ProductInfo> {
               child: RichText(
                 text: TextSpan(
                   style: AppTextStyles.regular12.copyWith(
-                    color: AppColors.onSurface,
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.5,
                   ),
                   children: [
@@ -107,7 +109,7 @@ class _ProductInfoState extends State<ProductInfo> {
                       TextSpan(
                         text: _isExpanded ? " Less" : "More",
                         style: AppTextStyles.semiBold12.copyWith(
-                          color: AppColors.primary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -121,6 +123,7 @@ class _ProductInfoState extends State<ProductInfo> {
               ),
             ),
           ),
+          SizedBox(height: 20.h),
         ],
       ),
     );
