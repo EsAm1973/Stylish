@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_details_images.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_info.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_size_selection.dart';
+import 'package:stylish/Features/home/data/models/product_model.dart';
 
 class ProductDetailsViewbody extends StatelessWidget {
-  const ProductDetailsViewbody({super.key});
+  const ProductDetailsViewbody({super.key, required this.product});
+  final ProductModel product;
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +26,11 @@ class ProductDetailsViewbody extends StatelessWidget {
             SizedBox(width: 16.w),
           ],
         ),
-        const SliverToBoxAdapter(child: ProductImagesCarousel()),
+        SliverToBoxAdapter(child: ProductImagesCarousel(product: product)),
         SliverToBoxAdapter(child: SizedBox(height: 16.h)),
         const SliverToBoxAdapter(child: ProductSizeSelection()),
         SliverToBoxAdapter(child: SizedBox(height: 24.h)),
-        const SliverToBoxAdapter(child: ProductInfo()),
+        SliverToBoxAdapter(child: ProductInfo(product: product)),
       ],
     );
   }

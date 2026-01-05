@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stylish/Features/home/data/models/product_model.dart';
 
 class ProductImagesCarousel extends StatefulWidget {
-  const ProductImagesCarousel({super.key});
+  const ProductImagesCarousel({super.key, required this.product});
+  final ProductModel product;
 
   @override
   State<ProductImagesCarousel> createState() => _ProductImagesCarouselState();
@@ -12,10 +15,7 @@ class _ProductImagesCarouselState extends State<ProductImagesCarousel> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  final List<String> _images = List.generate(
-    5,
-    (index) => 'assets/images/product_test.jpg',
-  );
+  late final List<String> _images = widget.product.images;
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +80,21 @@ class ProductImagesItem extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.r)),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
-        image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+        child: image.startsWith('http')
+            ? CachedNetworkImage(
+                imageUrl: image,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.error, color: Colors.red),
+              )
+            : Image.asset(image, fit: BoxFit.cover),
       ),
     );
   }

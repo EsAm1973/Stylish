@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stylish/Core/utils/app_router.dart';
 import 'package:stylish/Features/home/presentation/manager/products_cubit/products_cubit.dart';
 import 'package:stylish/Features/home/presentation/manager/products_cubit/products_state.dart';
 import 'package:stylish/Features/home/presentation/views/widgets/trending_products_item.dart';
@@ -78,37 +80,44 @@ class _TrendingProductsListState extends State<TrendingProductsList> {
                   itemBuilder: (context, index) {
                     return SizedBox(
                       width: itemWidth,
-                      child: TrendingProductItem(product: products[index]),
+                      child: GestureDetector(
+                        onTap: () {
+                          GoRouter.of(context).push(
+                            AppRouter.kProductDetailsRoute,
+                            extra: products[index],
+                          );
+                        },
+                        child: TrendingProductItem(product: products[index]),
+                      ),
                     );
                   },
                 ),
-                if (products.isNotEmpty)
-                  Positioned(
-                    right: 8.w,
-                    child: GestureDetector(
-                      onTap: _scrollForward,
-                      child: Container(
-                        width: 40.w,
-                        height: 40.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.shade200.withOpacity(0.9),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: .1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 16.sp,
-                          color: Colors.black87,
-                        ),
+                Positioned(
+                  right: 8.w,
+                  child: GestureDetector(
+                    onTap: _scrollForward,
+                    child: Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey.shade200.withOpacity(0.9),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: .1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16.sp,
+                        color: Colors.black87,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           );

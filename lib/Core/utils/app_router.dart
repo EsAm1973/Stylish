@@ -5,6 +5,7 @@ import 'package:stylish/Features/categories/presentation/manager/category_produc
 import 'package:stylish/Features/categories/presentation/views/category_view.dart';
 import 'package:stylish/Features/categories/presentation/views/product_details_view.dart';
 import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
+import 'package:stylish/Features/home/data/models/product_model.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
 import 'package:stylish/Features/home/presentation/views/home_view.dart';
 import 'package:go_router/go_router.dart';
@@ -97,7 +98,9 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kProductDetailsRoute,
-        builder: (context, state) => const ProductDetailsView(),
+        builder: (context, state) =>  ProductDetailsView(
+          product: state.extra as ProductModel,
+        ),
       ),
     ],
   );

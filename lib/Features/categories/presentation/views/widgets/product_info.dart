@@ -4,14 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stylish/Core/utils/app_colors.dart';
 import 'package:stylish/Core/utils/app_text_style.dart';
 
-class ProductInfo extends StatefulWidget {
-  const ProductInfo({
-    super.key,
-    this.description =
-        "Perhaps the most iconic sneaker of all-time, this original \"Chicago\" colorway is the cornerstone to any sneaker collection. Made famous in 1985 by Michael Jordan, the shoe has stood the test of time, becoming the most famous colorway of the Air Jordan 1. This 2015 release saw the return of the classic high-top silhouette, premium materials, and that undeniable red, black, and white palette that defined an era of basketball and street culture. Whether you're a hardcore collector or a casual enthusiast, the Air Jordan 1 Chicago remains a ultimate must-have.",
-  });
+import 'package:stylish/Features/home/data/models/product_model.dart';
 
-  final String description;
+class ProductInfo extends StatefulWidget {
+  const ProductInfo({super.key, required this.product});
+
+  final ProductModel product;
 
   @override
   State<ProductInfo> createState() => _ProductInfoState();
@@ -28,49 +26,62 @@ class _ProductInfoState extends State<ProductInfo> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Nike Sneakers", style: AppTextStyles.bold21),
+          Text(widget.product.title, style: AppTextStyles.bold21),
           SizedBox(height: 8.h),
           Text(
-            "Vision Alta Men’s Shoes Size (All Colours)",
+            widget.product.description,
             style: AppTextStyles.regular14,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 12.h),
           Row(
             children: [
               ...List.generate(
-                4,
-                (index) =>
-                    const Icon(Icons.star, color: Color(0xFFEDB310), size: 20),
+                5,
+                (index) => Icon(
+                  index < (widget.product.rating ?? 0).floor()
+                      ? Icons.star
+                      : (index < (widget.product.rating ?? 0)
+                            ? Icons.star_half
+                            : Icons.star_border),
+                  color: const Color(0xFFEDB310),
+                  size: 20,
+                ),
               ),
-              const Icon(Icons.star_half, color: Color(0xFFEDB310), size: 20),
               SizedBox(width: 8.w),
-              Text("56,890", style: AppTextStyles.regular12),
+              Text(
+                widget.product.reviewCount?.toString() ?? "0",
+                style: AppTextStyles.regular12,
+              ),
             ],
           ),
           SizedBox(height: 12.h),
           Row(
             children: [
-              Text(
-                "₹2,999",
-                style: AppTextStyles.regular14.copyWith(
-                  color: AppColors.textGrey,
-                  decoration: TextDecoration.lineThrough,
+              if (widget.product.originalPrice != null)
+                Text(
+                  "₹${widget.product.originalPrice}",
+                  style: AppTextStyles.regular14.copyWith(
+                    color: AppColors.textGrey,
+                    decoration: TextDecoration.lineThrough,
+                  ),
                 ),
-              ),
-              SizedBox(width: 8.w),
+              if (widget.product.originalPrice != null) SizedBox(width: 8.w),
               Text(
-                "₹1,500",
+                "₹${widget.product.price}",
                 style: AppTextStyles.bold14.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              SizedBox(width: 8.w),
-              Text(
-                "50% Off",
-                style: AppTextStyles.semiBold14.copyWith(
-                  color: AppColors.primary,
+              if (widget.product.discount != null) SizedBox(width: 8.w),
+              if (widget.product.discount != null)
+                Text(
+                  widget.product.discount!,
+                  style: AppTextStyles.semiBold14.copyWith(
+                    color: AppColors.primary,
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 20.h),
@@ -101,11 +112,12 @@ class _ProductInfoState extends State<ProductInfo> {
                     TextSpan(
                       text:
                           (_isExpanded ||
-                              widget.description.length <= _truncateLimit)
-                          ? widget.description
-                          : "${widget.description.substring(0, _truncateLimit)}... ",
+                              widget.product.description.length <=
+                                  _truncateLimit)
+                          ? widget.product.description
+                          : "${widget.product.description.substring(0, _truncateLimit)}... ",
                     ),
-                    if (widget.description.length > _truncateLimit)
+                    if (widget.product.description.length > _truncateLimit)
                       TextSpan(
                         text: _isExpanded ? " Less" : "More",
                         style: AppTextStyles.semiBold12.copyWith(

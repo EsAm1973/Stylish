@@ -29,7 +29,9 @@ class CategoriesProductsGrid extends StatelessWidget {
           final isEven = index % 2 == 0;
           return GestureDetector(
             onTap: () {
-              GoRouter.of(context).push(AppRouter.kProductDetailsRoute);
+              GoRouter.of(
+                context,
+              ).push(AppRouter.kProductDetailsRoute, extra: products[index]);
             },
             child: ProductItem(
               product: products[index],
