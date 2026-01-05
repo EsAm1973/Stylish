@@ -52,7 +52,7 @@ class _ProductImagesCarouselState extends State<ProductImagesCarousel> {
   Widget buildDot(int index) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      margin: EdgeInsets.symmetric(horizontal: 4.w),
+      margin: EdgeInsets.symmetric(horizontal: 2.w),
       height: 10.h,
       width: 10.w,
       decoration: BoxDecoration(
