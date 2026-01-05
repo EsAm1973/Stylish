@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stylish/Features/categories/presentation/views/widgets/product_details_images.dart';
 
 class ProductDetailsViewbody extends StatelessWidget {
   const ProductDetailsViewbody({super.key});
@@ -9,19 +11,20 @@ class ProductDetailsViewbody extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          title: const Text('Product Details'),
           leading: IconButton(
             onPressed: () {
               GoRouter.of(context).pop();
             },
             icon: const Icon(Icons.arrow_back_ios),
           ),
-          actions: [const Icon(Icons.shopping_cart), const SizedBox(width: 16)],
+          actions: [
+            const Icon(Icons.shopping_cart_outlined),
+            SizedBox(width: 16.w),
+          ],
         ),
-        const SliverToBoxAdapter(child: Column(children: [
-              
-            ],
-          )),
+        const SliverToBoxAdapter(
+          child: Column(children: [ProductImagesCarousel()]),
+        ),
       ],
     );
   }
