@@ -8,5 +8,6 @@ abstract class HomeRepo {
   Future<Either<Failure, List<ProductModel>>> fetchProducts({
     int limit = 5,
     int offset = 0,
+    String? title,
   });
 }

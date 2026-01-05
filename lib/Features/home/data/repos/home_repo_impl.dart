@@ -38,11 +38,16 @@ class HomeRepoImpl implements HomeRepo {
   Future<Either<Failure, List<ProductModel>>> fetchProducts({
     int limit = 5,
     int offset = 0,
+    String? title,
   }) async {
     try {
       final response = await _apiService.get(
         AppEndpoints.products,
-        queryParameters: {'offset': offset, 'limit': limit},
+        queryParameters: {
+          'offset': offset,
+          'limit': limit,
+          if (title != null) 'title': title,
+        },
       );
 
       List<ProductModel> products = [];
