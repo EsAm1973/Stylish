@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_details_images.dart';
+import 'package:stylish/Features/categories/presentation/views/widgets/product_info.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_size_selection.dart';
 
 class ProductDetailsViewbody extends StatelessWidget {
@@ -24,7 +25,10 @@ class ProductDetailsViewbody extends StatelessWidget {
           ],
         ),
         const SliverToBoxAdapter(child: ProductImagesCarousel()),
+        SliverToBoxAdapter(child: SizedBox(height: 16.h)),
         const SliverToBoxAdapter(child: ProductSizeSelection()),
+        SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+        const SliverToBoxAdapter(child: ProductInfo()),
       ],
     );
   }
