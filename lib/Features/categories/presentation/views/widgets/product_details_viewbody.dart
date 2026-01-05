@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Features/categories/presentation/views/widgets/product_details_images.dart';
+import 'package:stylish/Features/categories/presentation/views/widgets/product_size_selection.dart';
 
 class ProductDetailsViewbody extends StatelessWidget {
   const ProductDetailsViewbody({super.key});
@@ -22,9 +23,8 @@ class ProductDetailsViewbody extends StatelessWidget {
             SizedBox(width: 16.w),
           ],
         ),
-        const SliverToBoxAdapter(
-          child: Column(children: [ProductImagesCarousel()]),
-        ),
+        const SliverToBoxAdapter(child: ProductImagesCarousel()),
+        const SliverToBoxAdapter(child: ProductSizeSelection()),
       ],
     );
   }
