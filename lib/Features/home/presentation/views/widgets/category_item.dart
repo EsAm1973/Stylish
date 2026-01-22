@@ -12,56 +12,64 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.w),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Circular Image with Border
-          Container(
-            padding: EdgeInsets.all(2.r),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: .2),
-                width: 1,
+    return SizedBox(
+      width: 100.w,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Circular Image with Border
+            Container(
+              padding: EdgeInsets.all(2.r),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: .2),
+                  width: 1,
+                ),
               ),
-            ),
-            child: CachedNetworkImage(
-              imageUrl: category.image,
-              imageBuilder: (context, imageProvider) => Container(
-                width: 60.w,
-                height: 60.h,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
+              child: CachedNetworkImage(
+                imageUrl: category.image,
+                imageBuilder: (context, imageProvider) => Container(
+                  width: 60.w,
+                  height: 60.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              placeholder: (context, url) => Container(
-                width: 60.w,
-                height: 60.h,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.grey4.withValues(alpha: .1),
+                placeholder: (context, url) => Container(
+                  width: 60.w,
+                  height: 60.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.grey4.withValues(alpha: .1),
+                  ),
                 ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                width: 60.w,
-                height: 60.h,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.grey4.withValues(alpha: .1),
+                errorWidget: (context, url, error) => Container(
+                  width: 60.w,
+                  height: 60.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.grey4.withValues(alpha: .1),
+                  ),
+                  child: const Icon(Icons.error_outline),
                 ),
-                child: const Icon(Icons.error_outline),
               ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(category.name, style: AppTextStyles.regular10),
-        ],
+            SizedBox(height: 8.h),
+            Text(
+              category.name,
+              style: AppTextStyles.regular10,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

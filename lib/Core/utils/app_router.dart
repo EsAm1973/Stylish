@@ -16,6 +16,7 @@ import 'package:stylish/Features/auth/presentation/manager/register/register_cub
 import 'package:stylish/Features/auth/presentation/views/forget_pass_view.dart';
 import 'package:stylish/Features/auth/presentation/views/login_view.dart';
 import 'package:stylish/Features/auth/presentation/views/signup_view.dart';
+import 'package:stylish/Features/nav%20bar/presentation/views/nav_bar_view.dart';
 import 'package:stylish/Features/splash/presentation/views/splash_view.dart';
 import 'package:stylish/Features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:stylish/Features/home/presentation/manager/profile_cubit/profile_cubit.dart';
@@ -32,6 +33,7 @@ abstract class AppRouter {
   static const String kGetStartedRoute = '/getStarted';
   static const String kCategoryRoute = '/category';
   static const String kProductDetailsRoute = '/productDetails';
+  static const String kNavBarRoute = '/navBar';
 
   static final router = GoRouter(
     routes: [
@@ -61,21 +63,7 @@ abstract class AppRouter {
         path: kForgetPasswordRoute,
         builder: (context, state) => const ForgetPassView(),
       ),
-      GoRoute(
-        path: kHomeRoute,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => ProfileCubit(getit<ProfileRepo>()),
-            ),
-            BlocProvider(
-              create: (context) => CategoriesCubit(getit<HomeRepo>()),
-            ),
-            BlocProvider(create: (context) => ProductsCubit(getit<HomeRepo>())),
-          ],
-          child: const HomeView(),
-        ),
-      ),
+      GoRoute(path: kHomeRoute, builder: (context, state) => const HomeView()),
       GoRoute(
         path: kGetStartedRoute,
         builder: (context, state) => const GetStartedView(),
@@ -98,8 +86,22 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kProductDetailsRoute,
-        builder: (context, state) =>  ProductDetailsView(
-          product: state.extra as ProductModel,
+        builder: (context, state) =>
+            ProductDetailsView(product: state.extra as ProductModel),
+      ),
+      GoRoute(
+        path: kNavBarRoute,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => ProfileCubit(getit<ProfileRepo>()),
+            ),
+            BlocProvider(
+              create: (context) => CategoriesCubit(getit<HomeRepo>()),
+            ),
+            BlocProvider(create: (context) => ProductsCubit(getit<HomeRepo>())),
+          ],
+          child: const NavBarView(),
         ),
       ),
     ],
