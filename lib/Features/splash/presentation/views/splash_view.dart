@@ -34,7 +34,7 @@ class _SplashViewState extends State<SplashView> {
     if (token != null) {
       bool isGetStartedViewed = Prefs.getBool(isGetStartedViewSeenKey);
       if (isGetStartedViewed) {
-        route = AppRouter.kNavBarRoute;
+        route = AppRouter.kHomeRoute;
       } else {
         route = AppRouter.kGetStartedRoute;
       }

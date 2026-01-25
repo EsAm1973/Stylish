@@ -7,6 +7,7 @@ import 'package:stylish/Features/categories/presentation/views/product_details_v
 import 'package:stylish/Features/get%20started/presentation/views/get_started_view.dart';
 import 'package:stylish/Features/home/data/models/product_model.dart';
 import 'package:stylish/Features/home/data/repos/home_repo.dart';
+import 'package:stylish/Features/home/presentation/manager/navigation/navigation_cubit.dart';
 import 'package:stylish/Features/home/presentation/views/home_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stylish/Core/services/getit_service.dart';
@@ -63,7 +64,22 @@ abstract class AppRouter {
         path: kForgetPasswordRoute,
         builder: (context, state) => const ForgetPassView(),
       ),
-      GoRoute(path: kHomeRoute, builder: (context, state) => const HomeView()),
+      GoRoute(
+        path: kHomeRoute,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => NavigationCubit()),
+            BlocProvider(
+              create: (context) => ProfileCubit(getit<ProfileRepo>()),
+            ),
+            BlocProvider(
+              create: (context) => CategoriesCubit(getit<HomeRepo>()),
+            ),
+            BlocProvider(create: (context) => ProductsCubit(getit<HomeRepo>())),
+          ],
+          child: const HomeView(),
+        ),
+      ),
       GoRoute(
         path: kGetStartedRoute,
         builder: (context, state) => const GetStartedView(),
@@ -91,18 +107,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kNavBarRoute,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => ProfileCubit(getit<ProfileRepo>()),
-            ),
-            BlocProvider(
-              create: (context) => CategoriesCubit(getit<HomeRepo>()),
-            ),
-            BlocProvider(create: (context) => ProductsCubit(getit<HomeRepo>())),
-          ],
-          child: const NavBarView(),
-        ),
+        builder: (context, state) => const NavBarView(),
       ),
     ],
   );
