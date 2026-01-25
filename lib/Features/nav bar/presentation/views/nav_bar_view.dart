@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:stylish/Features/home/presentation/manager/navigation/navigation_cubit.dart';
 
 class NavBarView extends StatefulWidget {
@@ -16,50 +18,88 @@ class _NavBarViewState extends State<NavBarView> {
       builder: (context, state) {
         return NavigationBarTheme(
           data: NavigationBarThemeData(
-            indicatorColor: Colors.transparent,
+            indicatorColor: Theme.of(context).colorScheme.surface,
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
             iconTheme: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const IconThemeData(color: Colors.red);
+                return IconThemeData(
+                  color: Theme.of(context).colorScheme.primary,
+                );
               }
-              return const IconThemeData(color: Colors.black);
+              return IconThemeData(
+                color: Theme.of(context).colorScheme.onSurface,
+              );
             }),
             labelTextStyle: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const TextStyle(
-                  color: Colors.red,
+                return TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                 );
               }
-              return const TextStyle(color: Colors.black, fontSize: 12);
+              return TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 12.sp,
+              );
             }),
           ),
           child: NavigationBar(
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                icon: Icon(Icons.home_outlined),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome03,
+                  size: 30.0.sp,
+                ),
                 label: 'Home',
-                selectedIcon: Icon(Icons.home_outlined),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome03,
+                  size: 30.0.sp,
+                ),
               ),
               NavigationDestination(
-                icon: Icon(Icons.favorite_outline),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedFavourite,
+                  size: 30.0.sp,
+                ),
                 label: 'Wishlist',
-                selectedIcon: Icon(Icons.favorite_outline),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedFavourite,
+                  size: 30.0.sp,
+                ),
               ),
               NavigationDestination(
-                icon: Icon(Icons.shopping_cart_outlined),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedShoppingBasket01,
+                  size: 30.0.sp,
+                ),
                 label: 'Cart',
-                selectedIcon: Icon(Icons.shopping_cart_outlined),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedShoppingBasket01,
+                  size: 30.0.sp,
+                ),
               ),
               NavigationDestination(
-                icon: Icon(Icons.search),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSearch01,
+                  size: 30.0.sp,
+                ),
                 label: 'Search',
-                selectedIcon: Icon(Icons.search),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSearch01,
+                  size: 30.0.sp,
+                ),
               ),
               NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSettings03,
+                  size: 30.0.sp,
+                ),
                 label: 'Settings',
-                selectedIcon: Icon(Icons.settings_outlined),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSettings03,
+                  size: 30.0.sp,
+                ),
               ),
             ],
             selectedIndex: state.selectedIndex,
